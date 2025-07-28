@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>MementoAI</title>
+		<link
+			rel="icon"
+			href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"
+		/>
+
+		<!-- PWA Manifest -->
+		<link
+			rel="manifest"
+			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmYWZhZmEiLAogICAgInRoZW1lX2NvbG9yIjogIiM0YTkwZTUiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_192x192_ICON_BASE64_HERE_IiwKICAgICAgICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAgICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LF9ZT1VSXzUxMng1MTJfSUNPTl9CQVNFNjRfSEVSRV8iLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0K"
+		/>
+
+		<!-- Styling -->
+		<style>
+			:root {
+				--primary-color: #4a90e2;
+				--bg-color: #fafafa;
+				--text-color: #333;
+				--user-msg-bg: #e1f5fe;
+				--assistant-msg-bg: #f1f1f1;
+				--border-color: #ddd;
+			}
+			body {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				margin: 0;
+				background-color: var(--bg-color);
+				color: var(--text-color);
+				display: flex;
+				flex-direction: column;
+				height: 100vh;
+			}
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+			}
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1rem;
+				border-bottom: 1px solid var(--border-color);
+			}
+			h1 {
+				margin: 0;
+				font-size: 1.5rem;
+				color: var(--primary-color);
+			}
+			#settings-panel {
+				padding: 1rem;
+				border-bottom: 1px solid var(--border-color);
+				background-color: #fff;
+			}
+			.hidden {
+				display: none;
+			}
+			.form-group {
+				margin-bottom: 1rem;
+			}
+			label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-weight: bold;
+			}
+			input[type="text"],
+			input[type="password"],
+			select,
+			textarea {
+				width: 100%;
+				padding: 0.5rem;
+				border: 1px solid var(--border-color);
+				border-radius: 4px;
+				box-sizing: border-box;
+			}
+			.form-group small {
+				font-size: 0.8rem;
+				color: #666;
+				margin-top: 4px;
+				display: inline-block;
+			}
+			button {
+				padding: 0.5rem 1rem;
+				border: none;
+				border-radius: 4px;
+				background-color: var(--primary-color);
+				color: white;
+				cursor: pointer;
+				transition: background-color 0.2s;
+			}
+			button:hover {
+				background-color: #357abd;
+			}
+			.button-group {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+			#chat-container {
+				flex-grow: 1;
+				padding: 1rem;
+				overflow-y: auto;
+			}
+			.message {
+				max-width: 80%;
+				padding: 0.75rem;
+				border-radius: 8px;
+				margin-bottom: 1rem;
+				line-height: 1.5;
+				white-space: pre-wrap;
+			}
+			.message.user {
+				background-color: var(--user-msg-bg);
+				margin-left: auto;
+				text-align: left;
+			}
+			.message.assistant {
+				background-color: var(--assistant-msg-bg);
+			}
+			footer {
+				padding: 1rem;
+				border-top: 1px solid var(--border-color);
+			}
+			#chat-form {
+				display: flex;
+				gap: 0.5rem;
+			}
+			#message-input {
+				flex-grow: 1;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>MementoAI</h1>
+				<button id="settings-toggle">Settings</button>
+			</header>
+			<div id="settings-panel" class="hidden">
+				<div class="form-group">
+					<label for="api-key">OpenRouter API Key</label>
+					<input type="password" id="api-key" placeholder="sk-or-..." /><small
+						>Your key is saved in your browser's local storage.</small
+					>
+				</div>
+				<div class="form-group">
+					<label for="model-select">Model</label
+					><select id="model-select"></select>
+				</div>
+				<div class="form-group">
+					<label for="system-prompt">System Prompt</label><textarea id="system-prompt" rows="6"></textarea>
+				</div>
+				<div class="button-group">
+					<button id="refresh-models">Refresh Models</button>
+					<button id="export-memory">Export Memory</button>
+					<button id="import-memory">Import Memory</button>
+					<button id="enable-notifications">Enable Notifications</button>
+					<input type="file" id="import-file-input" accept=".json" style="display: none" />
+				</div>
+			</div>
+			<main id="chat-container"></main>
+			<footer>
+				<form id="chat-form">
+					<input type="text" id="message-input" placeholder="Start a conversation..." autocomplete="off" /><button
+						type="submit"
+					>
+						Send
+					</button>
+				</form>
+			</footer>
+		</div>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				// --- DOM ELEMENTS ---
+				const settingsToggle = document.getElementById("settings-toggle");
+				const settingsPanel = document.getElementById("settings-panel");
+				const apiKeyInput = document.getElementById("api-key");
+				const modelSelect = document.getElementById("model-select");
+				const refreshModelsBtn = document.getElementById("refresh-models");
+				const systemPromptTextarea = document.getElementById("system-prompt");
+				const exportMemoryBtn = document.getElementById("export-memory");
+				const importMemoryBtn = document.getElementById("import-memory");
+				const importFileInput = document.getElementById("import-file-input");
+				const chatContainer = document.getElementById("chat-container");
+				const chatForm = document.getElementById("chat-form");
+				const messageInput = document.getElementById("message-input");
+				const enableNotificationsBtn = document.getElementById("enable-notifications");
+
+				// --- APP STATE ---
+				let state = {
+					conversation: [],
+					memory: {
+						people: [],
+						birthdays: [],
+						selfProfile: { name: "User" },
+						tasks: [],
+						appointments: [],
+						health: []
+					},
+					systemPrompt: `You are MementoAI, a helpful and conversational assistant with long-term memory. Your primary goal is to remember details about the user and the conversation. After each response, you MUST parse the user's last message for new information and provide a JSON object containing any new memories. If no new memories are found, return an empty JSON object {}.
+
+The JSON object should be structured like this:
+{
+  "people": [{"name": "string", "relationship": "string", "preferences": "string", "quirks": "string"}],
+  "birthdays": [{"name": "string", "date": "YYYY-MM-DD", "tags": ["string"], "relationship": "string"}],
+  "tasks": [{"description": "string", "dueDate": "YYYY-MM-DDTHH:mm:ss"}]
+}
+Begin your response with the conversational part, followed by "|||MEMORY|||" and then the JSON object.`,
+					reminders: []
+				};
+
+				// --- LOCALSTORAGE ---
+				const saveState = () => localStorage.setItem("mementoAIState", JSON.stringify(state));
+				const loadState = () => {
+					const savedState = localStorage.getItem("mementoAIState");
+					if (savedState) state = JSON.parse(savedState);
+					systemPromptTextarea.value = state.systemPrompt;
+					renderConversation();
+				};
+				const saveApiKey = () => localStorage.setItem("mementoAI-apiKey", apiKeyInput.value);
+				const loadApiKey = () => {
+					const savedKey = localStorage.getItem("mementoAI-apiKey");
+					if (savedKey) apiKeyInput.value = savedKey;
+				};
+
+				// --- UI RENDERING ---
+				const addMessageToUI = (role, content) => {
+					const messageDiv = document.createElement("div");
+					messageDiv.className = `message ${role}`;
+					messageDiv.textContent = content;
+					chatContainer.appendChild(messageDiv);
+					chatContainer.scrollTop = chatContainer.scrollHeight;
+				};
+				const renderConversation = () => {
+					chatContainer.innerHTML = "";
+					if (state.conversation) state.conversation.forEach((msg) => addMessageToUI(msg.role, msg.content));
+				};
+
+				// --- API INTERACTION ---
+				const getApiKey = () => {
+					const key = apiKeyInput.value.trim();
+					if (!key) {
+						alert("Please enter your OpenRouter API key in the settings.");
+						return null;
+					}
+					return key;
+				};
+				const fetchModels = async () => {
+					const apiKey = getApiKey();
+					if (!apiKey) return;
+					try {
+						const response = await fetch("https://openrouter.ai/api/v1/models", {
+							headers: { Authorization: `Bearer ${apiKey}` }
+						});
+						if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+						const { data } = await response.json();
+						modelSelect.innerHTML = "";
+						data.forEach((model) => {
+							const option = document.createElement("option");
+							option.value = model.id;
+							option.textContent = model.name;
+							modelSelect.appendChild(option);
+						});
+					} catch (error) {
+						console.error("Failed to fetch models:", error);
+						alert(`Error fetching models: ${error.message}`);
+					}
+				};
+				const handleChatSubmit = async (event) => {
+					event.preventDefault();
+					const userMessage = messageInput.value.trim();
+					if (!userMessage) return;
+
+					addMessageToUI("user", userMessage);
+					state.conversation.push({ role: "user", content: userMessage });
+					messageInput.value = "";
+					const apiKey = getApiKey();
+					if (!apiKey) return;
+					const selectedModel = modelSelect.value || "openai/gpt-3.5-turbo";
+
+					const mainPrompt = state.systemPrompt;
+					const timeContext = `---\nCRITICAL CONTEXT: CURRENT DATE & TIME\nCurrent Timestamp: ${new Date().toISOString()}\nYou MUST use this as the reference point for any relative date or time.`;
+					const memoryContext = `---\nUSER'S MEMORY:\n${JSON.stringify(state.memory, null, 2)}\n---`;
+					const finalSystemMessage = `${mainPrompt}\n\n${timeContext}\n\n${memoryContext}`;
+
+					try {
+						const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+							method: "POST",
+							headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+							body: JSON.stringify({
+								model: selectedModel,
+								messages: [{ role: "system", content: finalSystemMessage }, ...state.conversation]
+							})
+						});
+						if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+						const data = await response.json();
+						let assistantResponse = data.choices[0].message.content;
+						const parts = assistantResponse.split("|||MEMORY|||");
+						const conversationalPart = parts[0].trim();
+						if (parts.length > 1) {
+							try {
+								const newMemory = JSON.parse(parts[1].trim());
+								updateMemory(newMemory);
+							} catch (e) {
+								console.error("Failed to parse memory JSON:", e);
+							}
+						}
+						addMessageToUI("assistant", conversationalPart);
+						state.conversation.push({ role: "assistant", content: conversationalPart });
+						saveState();
+					} catch (error) {
+						console.error("Chat API Error:", error);
+						addMessageToUI("assistant", `Error: ${error.message}`);
+					}
+				};
+
+				// --- MEMORY & REMINDERS ---
+				const updateMemory = (newMemory) => {
+					if (newMemory.people) state.memory.people.push(...newMemory.people);
+					if (newMemory.birthdays) state.memory.birthdays.push(...newMemory.birthdays);
+					if (newMemory.tasks) {
+						state.memory.tasks.push(...newMemory.tasks);
+						newMemory.tasks.forEach((task) => {
+							if (task.dueDate) scheduleReminder(task.description, new Date(task.dueDate), "task");
+						});
+					}
+					saveState();
+				};
+				const scheduleReminder = (text, timestamp, type) => {
+					const now = new Date();
+					const delay = timestamp.getTime() - now.getTime();
+					if (delay > 0 && navigator.serviceWorker.controller) {
+						navigator.serviceWorker.controller.postMessage({
+							type: "schedule-reminder",
+							payload: { text: text, delay: delay }
+						});
+						console.log(`Reminder for "${text}" handed off to the Service Worker.`);
+					} else if (delay > 0) {
+						console.log("Could not schedule reminder via worker. Using local setTimeout as fallback.");
+						setTimeout(() => {
+							if (Notification.permission === "granted") new Notification("MementoAI Reminder", { body: text });
+						}, delay);
+					}
+				};
+				const handleNotificationPermission = () => {
+					Notification.requestPermission().then((permission) => {
+						if (permission === "granted") new Notification("MementoAI", { body: "Notifications are now enabled." });
+					});
+				};
+				const exportMemory = () => {
+					/* Unchanged */
+				};
+				const importMemory = () => {
+					/* Unchanged */
+				};
+
+				// --- PWA SERVICE WORKER ---
+				const registerServiceWorker = () => {
+					if ("serviceWorker" in navigator) {
+						navigator.serviceWorker
+							.register("sw.js")
+							.then((registration) => console.log("Service Worker registered successfully"))
+							.catch((error) => console.error("Service Worker registration failed:", error));
+					}
+				};
+
+				// --- INITIALIZATION ---
+				const initializeApp = () => {
+					loadApiKey();
+					loadState();
+					registerServiceWorker();
+					fetchModels();
+					if (!state.conversation || state.conversation.length === 0) {
+						addMessageToUI(
+							"assistant",
+							"Welcome to MementoAI. Please set your API key and enable notifications in the settings."
+						);
+					}
+				};
+
+				// --- EVENT LISTENERS ---
+				settingsToggle.addEventListener("click", () => settingsPanel.classList.toggle("hidden"));
+				systemPromptTextarea.addEventListener("change", () => {
+					state.systemPrompt = systemPromptTextarea.value;
+					saveState();
+				});
+				apiKeyInput.addEventListener("change", saveApiKey);
+				chatForm.addEventListener("submit", handleChatSubmit);
+				refreshModelsBtn.addEventListener("click", fetchModels);
+				enableNotificationsBtn.addEventListener("click", handleNotificationPermission);
+				// ... (add export/import listeners if needed)
+
+				initializeApp();
+			});
+		</script>
+	</body>
+</html>
