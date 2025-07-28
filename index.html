@@ -579,6 +579,15 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					}
 				};
 
+				// --- TIME CONTEXT GENERATION ---
+				const getCurrentTimeContext = () => {
+					const now = new Date();
+					return `### CRITICAL TIME CONTEXT (Current Time)
+- UTC Timestamp: ${now.toISOString()}
+- User's Local Time: ${now.toLocaleString()}
+- User's Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
+				};
+
 				const handleChatSubmit = async (event) => {
 					event.preventDefault();
 					const userMessage = messageInput.value.trim();
@@ -600,16 +609,12 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					saveState();
 
 					// Construct the system context
-					const now = new Date();
-					const timeContext = `### CRITICAL TIME CONTEXT\n- UTC Timestamp: ${now.toISOString()}\n- User's Timezone: ${
-						Intl.DateTimeFormat().resolvedOptions().timeZone
-					}`;
 					const memoryContext = `### USER'S CURRENT MEMORY (with IDs)\n${JSON.stringify(state.memory, null, 2)}`;
-					const finalSystemMessage = `${state.systemPrompt}\n\n${timeContext}\n\n${memoryContext}`;
+					const finalSystemMessage = `${state.systemPrompt}\n\n${getCurrentTimeContext()}\n\n${memoryContext}`;
 
 					const reinforcementPrompt = {
 						role: "system",
-						content: `REMINDER: Your task is to respond conversationally AND manage memory. After your text response, you MUST use the "|||MEMORY|||" separator followed by a single, valid JSON object specifying 'add', 'update', or 'delete' actions as defined in the main system prompt. If no actions are needed, use an empty object {}. Now, process the user's following message.`
+						content: `REMINDER: Your task is to respond conversationally AND manage memory. After your text response, you MUST use the "|||MEMORY|||" separator followed by a single, valid JSON object specifying 'add', 'update', or 'delete' actions as defined in the main system prompt. If no actions are needed, use an empty object {}. Now, process the user's following message.\n\n${getCurrentTimeContext()}`
 					};
 
 					const olderConversation = state.conversation.slice(0, -1);
