@@ -15,6 +15,11 @@
 			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmYWZhZmEiLAogICAgInRoZW1lX2NvbG9yIjogIiM0YTkwZTUiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_192x192_ICON_BASE64_HERE_IiwKICAgICAgICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAgICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LF9ZT1VSXzUxMng1MTJfSUNPTl9CQVNFNjRfSEVSRV8iLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0K"
 		/>
 
+		<!-- Markdown rendering -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+
 		<!-- Styling -->
 		<style>
 			:root {
@@ -114,12 +119,12 @@
 				border-radius: 8px;
 				margin-bottom: 1rem;
 				line-height: 1.5;
-				white-space: pre-wrap;
 			}
 			.message.user {
 				background-color: var(--user-msg-bg);
 				margin-left: auto;
 				text-align: left;
+				white-space: pre-wrap;
 			}
 			.message.assistant {
 				background-color: var(--assistant-msg-bg);
@@ -135,6 +140,98 @@
 				background-color: #ffebee;
 				color: #c62828;
 				border-left: 4px solid #c62828;
+				white-space: pre-wrap;
+			}
+
+			/* Markdown styling */
+			.message .content h1,
+			.message .content h2,
+			.message .content h3,
+			.message .content h4,
+			.message .content h5,
+			.message .content h6 {
+				margin: 0.5rem 0;
+				line-height: 1.2;
+			}
+			.message .content h1 {
+				font-size: 1.5rem;
+			}
+			.message .content h2 {
+				font-size: 1.3rem;
+			}
+			.message .content h3 {
+				font-size: 1.1rem;
+			}
+			.message .content p {
+				margin: 0.5rem 0;
+			}
+			.message .content ul,
+			.message .content ol {
+				margin: 0.5rem 0;
+				padding-left: 1.5rem;
+			}
+			.message .content li {
+				margin: 0.25rem 0;
+			}
+			.message .content blockquote {
+				border-left: 4px solid #ddd;
+				margin: 0.5rem 0;
+				padding: 0.5rem 1rem;
+				background-color: rgba(0, 0, 0, 0.05);
+				font-style: italic;
+			}
+			.message .content code {
+				background-color: rgba(0, 0, 0, 0.1);
+				padding: 0.2rem 0.4rem;
+				border-radius: 3px;
+				font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+				font-size: 0.9em;
+			}
+			.message .content pre {
+				background-color: #f8f9fa;
+				border: 1px solid #e9ecef;
+				border-radius: 4px;
+				padding: 1rem;
+				margin: 0.5rem 0;
+				overflow-x: auto;
+			}
+			.message .content pre code {
+				background-color: transparent;
+				padding: 0;
+				border-radius: 0;
+			}
+			.message .content table {
+				border-collapse: collapse;
+				width: 100%;
+				margin: 0.5rem 0;
+			}
+			.message .content th,
+			.message .content td {
+				border: 1px solid #ddd;
+				padding: 0.5rem;
+				text-align: left;
+			}
+			.message .content th {
+				background-color: rgba(0, 0, 0, 0.05);
+				font-weight: bold;
+			}
+			.message .content a {
+				color: var(--primary-color);
+				text-decoration: none;
+			}
+			.message .content a:hover {
+				text-decoration: underline;
+			}
+			.message .content hr {
+				border: none;
+				border-top: 1px solid #ddd;
+				margin: 1rem 0;
+			}
+			.message .content strong {
+				font-weight: bold;
+			}
+			.message .content em {
+				font-style: italic;
 			}
 			footer {
 				padding: 1rem;
@@ -210,6 +307,20 @@
 
 		<script>
 			document.addEventListener("DOMContentLoaded", () => {
+				// Configure marked for better markdown rendering
+				marked.setOptions({
+					highlight: function (code, lang) {
+						if (lang && hljs.getLanguage(lang)) {
+							try {
+								return hljs.highlight(code, { language: lang }).value;
+							} catch (err) {}
+						}
+						return hljs.highlightAuto(code).value;
+					},
+					breaks: true,
+					gfm: true,
+					pedantic: false
+				});
 				// --- DEBUG LOGGING ---
 				const debugInfo = document.getElementById("debug-info");
 				const log = (message) => {
@@ -348,9 +459,26 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					}
 
 					const contentDiv = document.createElement("div");
-					contentDiv.textContent = content;
-					messageDiv.appendChild(contentDiv);
+					contentDiv.className = "content";
 
+					if (role === "assistant") {
+						// Render markdown for assistant messages
+						try {
+							// Pre-process content to ensure line breaks are preserved
+							const processedContent = content.replace(/\n/g, "\n\n");
+							contentDiv.innerHTML = marked.parse(processedContent);
+						} catch (error) {
+							log(`Markdown parsing error: ${error.message}`);
+							// Fallback: preserve line breaks manually
+							contentDiv.innerHTML = content.replace(/\n/g, "<br>");
+						}
+					} else {
+						// Keep user messages as plain text with preserved whitespace
+						contentDiv.style.whiteSpace = "pre-wrap";
+						contentDiv.textContent = content;
+					}
+
+					messageDiv.appendChild(contentDiv);
 					chatContainer.appendChild(messageDiv);
 					chatContainer.scrollTop = chatContainer.scrollHeight;
 				};
