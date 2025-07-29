@@ -12,7 +12,7 @@
 		<!-- PWA Manifest -->
 		<link
 			rel="manifest"
-			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmY2Y4ZjIiLAogICAgInRoZW1lX2NvbG9yIjogIiM4YTY2NjEiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_192x192_ICON_BASE64_HERE_IiwKICAgICAgICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAgICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LF9ZT1VSXzUxMng1MTJfSUNPTl9CQVNFNjRfSEVSRV8iLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0K"
+			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmY2Y4ZjIiLAogICAgInRoZW1lX2NvbG9yIjogIiM4YTY2NjEiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_19MngxOTIiLAogICAgICAgICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9LAogICAgICAgIHsKICAgICAgICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsX1lPVVJfNTEyeDUxMl9JQ09OX0JBU0U2NF9IRVJFXyIsCiAgICAgICAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwKICAgICAgICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgICAgIH0KICAgIF0KfQo="
 		/>
 
 		<!-- Fonts -->
@@ -792,19 +792,80 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				const scheduleReminder = (text, timestamp) => {
 					const now = new Date();
 					const delay = timestamp.getTime() - now.getTime();
-					if (delay > 0 && navigator.serviceWorker.controller) {
-						navigator.serviceWorker.controller.postMessage({
-							type: "schedule-reminder",
-							payload: { text: text, delay: delay }
-						});
-						log(`Reminder scheduled via Service Worker: "${text}"`);
-					} else if (delay > 0) {
+					
+					// Check if the delay is valid
+					if (delay <= 0) {
+						log("Invalid reminder time: in the past");
+						addMessageToUI("error", "Cannot schedule reminder in the past.");
+						return;
+					}
+					
+					// Check notification permission
+					if (Notification.permission !== "granted") {
+						log("Notification permission not granted");
+						const confirmPermission = confirm("Notifications are required for reminders. Would you like to enable them now?");
+						if (confirmPermission) {
+							handleNotificationPermission();
+						} else {
+							log("User declined notification permission");
+							addMessageToUI("error", "Reminders will not work without notification permission.");
+							return;
+						}
+					}
+					
+					if (navigator.serviceWorker.controller) {
+						try {
+							navigator.serviceWorker.controller.postMessage({
+								type: "schedule-reminder",
+								payload: { text: text, delay: delay }
+							});
+							log(`Reminder scheduled via Service Worker: "${text}" in ${Math.round(delay/1000)} seconds`);
+							addMessageToUI("assistant", `I've scheduled a reminder for "${text}" which will notify you in ${Math.round(delay/1000)} seconds.`);
+						} catch (error) {
+							log(`Error sending message to Service Worker: ${error.message}`);
+							// Fallback to setTimeout
+							log("Using setTimeout fallback for reminder");
+							setTimeout(() => {
+								if (Notification.permission === "granted") {
+									try {
+										new Notification("MementoAI Reminder", { 
+											body: text,
+											icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"
+										});
+										log(`Reminder notification shown: "${text}"`);
+									} catch (error) {
+										log(`Error showing notification: ${error.message}`);
+										addMessageToUI("error", `Failed to show notification: ${error.message}`);
+									}
+								} else {
+									log("Notification permission not granted for fallback");
+									addMessageToUI("error", "Notification permission not granted. Reminder could not be shown.");
+								}
+							}, delay);
+							log(`Reminder scheduled via setTimeout: "${text}" in ${Math.round(delay/1000)} seconds`);
+							addMessageToUI("assistant", `I've scheduled a reminder for "${text}" which will notify you in ${Math.round(delay/1000)} seconds.`);
+						}
+					} else {
 						log("Using setTimeout fallback for reminder");
 						setTimeout(() => {
 							if (Notification.permission === "granted") {
-								new Notification("MementoAI Reminder", { body: text });
+								try {
+									new Notification("MementoAI Reminder", { 
+										body: text,
+										icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"
+									});
+									log(`Reminder notification shown: "${text}"`);
+								} catch (error) {
+									log(`Error showing notification: ${error.message}`);
+									addMessageToUI("error", `Failed to show notification: ${error.message}`);
+								}
+							} else {
+								log("Notification permission not granted for fallback");
+								addMessageToUI("error", "Notification permission not granted. Reminder could not be shown.");
 							}
 						}, delay);
+						log(`Reminder scheduled via setTimeout: "${text}" in ${Math.round(delay/1000)} seconds`);
+						addMessageToUI("assistant", `I've scheduled a reminder for "${text}" which will notify you in ${Math.round(delay/1000)} seconds.`);
 					}
 				};
 
@@ -812,8 +873,26 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					Notification.requestPermission().then((permission) => {
 						log(`Notification permission: ${permission}`);
 						if (permission === "granted") {
-							new Notification("MementoAI", { body: "Notifications are now enabled." });
+							try {
+								new Notification("MementoAI", { 
+									body: "Notifications are now enabled.",
+									icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>"
+								});
+								addMessageToUI("assistant", "Notifications are now enabled. You'll receive reminders for your tasks.");
+							} catch (error) {
+								log(`Error showing notification: ${error.message}`);
+								addMessageToUI("error", `Failed to show notification: ${error.message}`);
+							}
+						} else if (permission === "denied") {
+							log("Notification permission denied by user");
+							addMessageToUI("error", "Notification permission was denied. You may need to enable it in your browser settings to receive reminders.");
+						} else {
+							log("Notification permission dismissed by user");
+							addMessageToUI("assistant", "Notification permission request was dismissed. You can enable notifications later in the settings.");
 						}
+					}).catch((error) => {
+						log(`Error requesting notification permission: ${error.message}`);
+						addMessageToUI("error", `Error requesting notification permission: ${error.message}`);
 					});
 				};
 
