@@ -1,0 +1,64 @@
+/* Layout Styles - Body, Container, Header, Footer */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: var(--font-family);
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	line-height: var(--line-height);
+	font-size: var(--font-size);
+}
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: var(--padding);
+}
+
+header {
+	margin-bottom: calc(var(--margin) * 2);
+	text-align: center;
+}
+
+header h1 {
+	margin-bottom: var(--margin);
+	color: var(--text-color);
+}
+
+header p {
+	color: var(--secondary-text);
+	margin-bottom: var(--margin);
+}
+
+footer {
+	margin-top: calc(var(--margin) * 3);
+	padding-top: var(--padding);
+	border-top: 1px solid var(--border-color);
+	text-align: center;
+	color: var(--secondary-text);
+	font-size: 0.9em;
+}
+
+footer a {
+	color: var(--accent-color);
+	text-decoration: none;
+}
+
+footer a:hover {
+	text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+	.container {
+		padding: var(--spacing-unit);
+	}
+	
+	header h1 {
+		font-size: 1.8em;
+	}
+}

@@ -1,0 +1,9 @@
+{
+    "name": "MementoAI",
+    "short_name": "Memento",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#fcf8f2",
+    "theme_color": "#8a6661",
+    "description": "A chat assistant with long-term memory."
+}

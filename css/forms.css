@@ -1,0 +1,135 @@
+/* Form Styles - Input, Button, Form Elements */
+.input-group {
+	margin-bottom: var(--margin);
+}
+
+label {
+	display: block;
+	margin-bottom: calc(var(--spacing-unit) / 2);
+	font-weight: 500;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+	width: 100%;
+	padding: var(--spacing-unit);
+	border: 1px solid var(--input-border);
+	border-radius: var(--border-radius);
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+	transition: border-color var(--transition-speed);
+	background-color: var(--container-bg);
+	color: var(--text-color);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: var(--input-focus);
+}
+
+button {
+	background-color: var(--button-bg);
+	color: white;
+	border: none;
+	padding: var(--spacing-unit) calc(var(--spacing-unit) * 2);
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+	transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+button:hover {
+	background-color: var(--button-hover);
+}
+
+button:active {
+	transform: scale(0.98);
+}
+
+button:disabled {
+	background-color: var(--secondary-text);
+	cursor: not-allowed;
+}
+
+.btn-primary {
+	background-color: var(--button-bg);
+}
+
+.btn-primary:hover {
+	background-color: var(--button-hover);
+}
+
+.btn-secondary {
+	background-color: var(--secondary-text);
+}
+
+.btn-secondary:hover {
+	background-color: var(--text-color);
+}
+
+.btn-danger {
+	background-color: var(--delete-color);
+}
+
+.btn-danger:hover {
+	background-color: var(--delete-hover);
+}
+
+.btn-edit {
+	background-color: var(--edit-color);
+	color: var(--text-color);
+}
+
+.btn-edit:hover {
+	background-color: var(--edit-hover);
+}
+
+.btn-small {
+	padding: calc(var(--spacing-unit) / 2) var(--spacing-unit);
+	font-size: 0.9em;
+}
+
+.form-row {
+	display: flex;
+	gap: var(--spacing-unit);
+}
+
+.form-row .input-group {
+	flex: 1;
+}
+
+.checkbox-group {
+	display: flex;
+	align-items: center;
+	margin-bottom: var(--margin);
+}
+
+.checkbox-group input[type="checkbox"] {
+	margin-right: var(--spacing-unit);
+}
+
+.radio-group {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--spacing-unit) / 2);
+	margin-bottom: var(--margin);
+}
+
+.radio-group label {
+	display: flex;
+	align-items: center;
+}
+
+.radio-group input[type="radio"] {
+	margin-right: var(--spacing-unit);
+}

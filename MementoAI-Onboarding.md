@@ -188,6 +188,111 @@ MementoAI is built on the principle that ADHD brains work differently, not defic
 
 By specifically addressing these ADHD-related needs, MementoAI provides more effective support than generic productivity tools that require users to adapt to their limitations rather than designing for neurodiverse cognitive patterns.
 
+## 7. Code Structure and Architecture
+
+MementoAI follows a modular architecture that separates concerns across different files and directories, making the codebase maintainable, scalable, and easy to understand. This approach allows developers to quickly locate functionality, make targeted changes, and extend the system with new features.
+
+### Directory Structure
+
+The project is organized into several key directories, each serving a specific purpose:
+
+```
+MementoAI/
+├── css/            # Stylesheet files organized by responsibility
+├── js/             # JavaScript modules separated by functionality
+├── libs/           # Third-party libraries and dependencies
+├── index.html      # Main application entry point
+├── sw.js           # Service Worker for PWA functionality
+└── MementoAI-Onboarding.md  # Project documentation
+```
+
+### Directory Descriptions
+
+**css/** - Contains all stylesheet files organized by their specific responsibilities. This modular approach to styling allows for targeted updates and easier maintenance.
+
+**js/** - Houses the JavaScript application code, separated into modules based on functionality. Each file handles a specific aspect of the application, following the single responsibility principle.
+
+**libs/** - Contains third-party libraries and dependencies that the application relies on. This separation makes it easy to update external libraries without affecting core application code.
+
+**Root Files** - The project root contains essential files including the main HTML entry point, service worker for PWA functionality, and project documentation.
+
+### CSS Files and Responsibilities
+
+The CSS directory contains five specialized files, each handling specific aspects of the application's styling:
+
+**css/variables.css** - Defines all CSS custom properties (variables) used throughout the application. This centralized approach to theming ensures consistency and makes global styling changes simple. Variables include colors, spacing, typography, and other design tokens that maintain visual cohesion across the application.
+
+**css/layout.css** - Manages the overall page structure and layout components. This file handles positioning of major elements, responsive grid systems, and container styling. It ensures the application maintains proper structure across different screen sizes and devices.
+
+**css/forms.css** - Contains all form-related styling including input fields, buttons, labels, and form containers. This modular approach to form styling ensures consistency across all user input elements and makes form-related updates isolated and predictable.
+
+**css/messages.css** - Styles the chat interface components including message containers, user vs. AI message differentiation, timestamps, and message actions. This file handles the visual presentation of the conversational interface, which is central to the user experience.
+
+**css/markdown.css** - Provides styling for rendered markdown content within AI responses. This ensures that formatted text, code blocks, lists, and other markdown elements are displayed consistently and readably within the chat interface.
+
+### JavaScript Files and Responsibilities
+
+The JavaScript directory contains seven modules, each responsible for specific application functionality:
+
+**js/main.js** - Serves as the application's entry point and orchestrator. It initializes other modules, sets up event listeners, and coordinates the overall application flow. This file keeps the application bootstrap logic clean and centralized.
+
+**js/state.js** - Manages the application's state, including user preferences, memory data, and UI states. It provides a centralized state management system that ensures data consistency across different components and modules.
+
+**js/ui.js** - Handles all user interface interactions and DOM manipulations. This module is responsible for rendering messages, updating the UI based on state changes, and managing user interactions with the interface elements.
+
+**js/api.js** - Manages all external API communications, particularly with OpenRouter for AI model interactions. It encapsulates API endpoints, request formatting, and response handling, providing a clean interface for the rest of the application to interact with external services.
+
+**js/memory.js** - Implements the core memory management system that stores, retrieves, and organizes user information. This is a critical component that handles the persistent storage of conversations, tasks, appointments, and other important data.
+
+**js/notifications.js** - Manages all notification functionality, including browser notifications for reminders and alerts. It handles permission requests, notification scheduling, and delivery of time-sensitive information to users.
+
+**js/pwa.js** - Implements Progressive Web App functionality, including offline capabilities, installation prompts, and service worker registration. This module ensures the application works reliably across different devices and network conditions.
+
+### Benefits of the Modular Approach
+
+This modular architecture provides several key benefits for development and maintenance:
+
+**Maintainability** - By separating concerns into focused modules, developers can quickly locate and update specific functionality without affecting unrelated parts of the application. This makes bug fixes and feature additions more predictable and less risky.
+
+**Scalability** - The modular structure makes it easy to add new features by creating new modules or extending existing ones. As the application grows, this approach prevents code from becoming monolithic and difficult to manage.
+
+**Collaboration** - Team members can work on different modules simultaneously with minimal conflicts. The clear separation of responsibilities reduces merge conflicts and allows for parallel development efforts.
+
+**Testing** - Individual modules can be tested in isolation, making unit testing more straightforward and comprehensive. This leads to more reliable code and easier debugging.
+
+**Performance** - The modular JavaScript structure allows for better code organization and potential for future code splitting, which can improve loading performance as the application grows.
+
+**Reusability** - Well-defined modules can potentially be reused in other projects or contexts, maximizing the value of the development effort.
+
+### File Tree Diagram
+
+```
+MementoAI/
+├── css/
+│   ├── variables.css     # CSS custom properties and design tokens
+│   ├── layout.css        # Page structure and layout components
+│   ├── forms.css         # Form elements and input styling
+│   ├── messages.css      # Chat interface message styling
+│   └── markdown.css      # Markdown content rendering styles
+├── js/
+│   ├── main.js           # Application entry point and orchestrator
+│   ├── state.js          # Centralized state management
+│   ├── ui.js             # User interface interactions and DOM manipulation
+│   ├── api.js            # External API communications
+│   ├── memory.js         # Core memory management system
+│   ├── notifications.js  # Notification functionality
+│   └── pwa.js            # Progressive Web App features
+├── libs/
+│   ├── highlight.min.css # Syntax highlighting styles
+│   ├── highlight.min.js  # Syntax highlighting functionality
+│   ├── marked.min.js     # Markdown parsing library
+├── index.html            # Main application entry point
+├── sw.js                 # Service Worker for PWA functionality
+└── MementoAI-Onboarding.md  # Project documentation
+```
+
+This modular structure supports both current development needs and future growth, ensuring that MementoAI remains maintainable and extensible as new features are added to support individuals with ADHD.
+
 ## Conclusion
 
 MementoAI represents a new approach to digital assistance for individuals with ADHD, combining cutting-edge AI technology with a deep understanding of neurodiverse cognitive patterns. By focusing on natural conversation, persistent memory, and adaptive support, MementoAI provides a tool that works with users rather than against them.

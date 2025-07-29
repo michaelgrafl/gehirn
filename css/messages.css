@@ -1,0 +1,122 @@
+/* Message Styles - Chat Messages */
+#messages {
+	margin-top: var(--margin);
+	height: 400px;
+	overflow-y: auto;
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius);
+	padding: var(--spacing-unit);
+	background-color: var(--container-bg);
+}
+
+.message {
+	margin-bottom: var(--margin);
+	padding: var(--spacing-unit);
+	border-radius: var(--border-radius);
+	background-color: var(--message-bg);
+	box-shadow: var(--box-shadow);
+	transition: background-color var(--transition-speed), transform var(--transition-speed);
+	animation: fadeIn 0.3s ease-out;
+}
+
+.message:hover {
+	background-color: var(--message-hover);
+	transform: translateY(-2px);
+}
+
+.message.ai {
+	background-color: var(--ai-bg);
+}
+
+.message.user {
+	background-color: var(--user-bg);
+}
+
+.message .timestamp {
+	font-size: 0.8em;
+	color: var(--secondary-text);
+	margin-bottom: calc(var(--spacing-unit) / 2);
+}
+
+.message .content {
+	font-size: var(--font-size);
+}
+
+.message .actions {
+	margin-top: calc(var(--spacing-unit) / 2);
+	display: flex;
+	gap: calc(var(--spacing-unit) / 2);
+}
+
+.message .actions button {
+	font-size: 0.8em;
+	padding: calc(var(--spacing-unit) / 4) calc(var(--spacing-unit) / 2);
+}
+
+.message .actions .btn-edit {
+	background-color: var(--edit-color);
+	color: var(--text-color);
+}
+
+.message .actions .btn-edit:hover {
+	background-color: var(--edit-hover);
+}
+
+.message .actions .btn-delete {
+	background-color: var(--delete-color);
+}
+
+.message .actions .btn-delete:hover {
+	background-color: var(--delete-hover);
+}
+
+.message .actions .btn-memory {
+	background-color: var(--accent-color);
+}
+
+.message .actions .btn-memory:hover {
+	background-color: var(--hover-color);
+}
+
+.message .memory-indicator {
+	display: inline-block;
+	margin-left: var(--spacing-unit);
+	padding: calc(var(--spacing-unit) / 4) calc(var(--spacing-unit) / 2);
+	background-color: var(--memory-bg);
+	color: var(--text-color);
+	border-radius: calc(var(--border-radius) * 2);
+	font-size: 0.7em;
+	font-weight: bold;
+}
+
+.message .thinking {
+	font-style: italic;
+	color: var(--secondary-text);
+	margin-top: calc(var(--spacing-unit) / 2);
+}
+
+.message .thinking::before {
+	content: "💭 ";
+}
+
+.message .loading {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-left: var(--spacing-unit);
+	border: 2px solid rgba(52, 152, 219, 0.3);
+	border-radius: 50%;
+	border-top-color: var(--accent-color);
+	animation: spin 1s ease-in-out infinite;
+	vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+	#messages {
+		height: 300px;
+	}
+	
+	.message .actions {
+		flex-wrap: wrap;
+	}
+}
