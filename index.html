@@ -12,26 +12,48 @@
 		<!-- PWA Manifest -->
 		<link
 			rel="manifest"
-			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmYWZhZmEiLAogICAgInRoZW1lX2NvbG9yIjogIiM0YTkwZTUiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_192x192_ICON_BASE64_HERE_IiwKICAgICAgICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAgICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LF9ZT1VSXzUxMng1MTJfSUNPTl9CQVNFNjRfSEVSRV8iLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0K"
+			href="data:application/json;base64,ewogICAgIm5hbWUiOiAiTWVtZW50b0FJIiwKICAgICJzaG9ydF9uYW1lIjogIk1lbWVudG8iLAogICAgInN0YXJ0X3VybCI6ICIuIiwKICAgICImZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAgICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmY2Y4ZjIiLAogICAgInRoZW1lX2NvbG9yIjogIiM4YTY2NjEiLAogICAgImRlc2NyaXB0aW9uIjogIkEgY2hhdCBhc3Npc3RhbnQgd2l0aCBsb25nLXRlcm0gbWVtb3J5LiIsCiAgICAiaWNvbnMiOiBbCiAgICAgICAgewogICAgICAgICAgICAic3JjIjogImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCx_YOUR_192x192_ICON_BASE64_HERE_IiwKICAgICAgICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAgICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICAgICAgfSwKICAgICAgICB7CiAgICAgICAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9wbmc7YmFzZTY0LF9ZT1VSXzUxMng1MTJfSUNPTl9CQVNFNjRfSEVSRV8iLAogICAgICAgICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgICAgICB9CiAgICBdCn0K"
+		/>
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap"
+			rel="stylesheet"
 		/>
 
 		<!-- Markdown rendering -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css"
+		/>
 
 		<!-- Styling -->
 		<style>
 			:root {
-				--primary-color: #4a90e2;
-				--bg-color: #fafafa;
-				--text-color: #333;
-				--user-msg-bg: #e1f5fe;
-				--assistant-msg-bg: #f1f1f1;
-				--border-color: #ddd;
+				--primary-color: #8a6661;
+				--bg-color: #fcf8f2;
+				--text-color: #5d534a;
+				--user-msg-bg: #fff;
+				--assistant-msg-bg: #fcf8f2;
+				--border-color: #eaddd7;
+				--hover-color: #c25546;
+			}
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(15px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
 			}
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+				font-family: "Crimson Pro", serif;
 				margin: 0;
 				background-color: var(--bg-color);
 				color: var(--text-color);
@@ -62,7 +84,7 @@
 			#settings-panel {
 				padding: 1rem;
 				border-bottom: 1px solid var(--border-color);
-				background-color: #fff;
+				background-color: #fffaf5;
 			}
 			.hidden {
 				display: none;
@@ -80,28 +102,34 @@
 			select,
 			textarea {
 				width: 100%;
-				padding: 0.5rem;
+				padding: 0.75rem;
 				border: 1px solid var(--border-color);
-				border-radius: 4px;
+				border-radius: 8px;
 				box-sizing: border-box;
+				background-color: #ffffff;
+				color: var(--text-color);
+				font-family: "Crimson Pro", serif;
+				font-size: 1.2rem;
 			}
 			.form-group small {
 				font-size: 0.8rem;
-				color: #666;
+				color: #8c7f76;
 				margin-top: 4px;
 				display: inline-block;
 			}
 			button {
-				padding: 0.5rem 1rem;
+				padding: 0.75rem 1.25rem;
 				border: none;
-				border-radius: 4px;
+				border-radius: 8px;
 				background-color: var(--primary-color);
 				color: white;
 				cursor: pointer;
 				transition: background-color 0.2s;
+				font-family: "Crimson Pro", serif;
+				font-weight: 700; /* Bold weight for buttons */
 			}
 			button:hover {
-				background-color: #357abd;
+				background-color: var(--hover-color);
 			}
 			.button-group {
 				display: flex;
@@ -114,20 +142,21 @@
 				overflow-y: auto;
 			}
 			.message {
-				max-width: 80%;
-				padding: 0.75rem;
-				border-radius: 8px;
+				max-width: 85%;
+				padding: 1rem;
+				border-radius: 12px;
 				margin-bottom: 1rem;
-				line-height: 1.5;
+				line-height: 1.6;
+				animation: fadeInUp 0.5s ease-out;
 			}
 			.message.user {
 				background-color: var(--user-msg-bg);
 				margin-left: auto;
-				text-align: left;
-				white-space: pre-wrap;
 			}
 			.message.assistant {
 				background-color: var(--assistant-msg-bg);
+				margin-right: auto;
+				font-size: 1.1rem;
 			}
 			.message.assistant .model-tag {
 				font-size: 0.7rem;
@@ -142,6 +171,20 @@
 				border-left: 4px solid #c62828;
 				white-space: pre-wrap;
 			}
+			.previous-conversation summary {
+				cursor: pointer;
+				padding: 0.5rem 0;
+				margin-bottom: 1rem;
+				font-style: italic;
+				color: #a0938a;
+				user-select: none;
+			}
+			.previous-conversation summary:hover {
+				color: var(--text-color);
+			}
+			.previous-conversation[open] > summary {
+				margin-bottom: 1rem;
+			}
 
 			/* Markdown styling */
 			.message .content h1,
@@ -150,17 +193,9 @@
 			.message .content h4,
 			.message .content h5,
 			.message .content h6 {
-				margin: 0.5rem 0;
+				margin: 1rem 0 0.5rem 0;
 				line-height: 1.2;
-			}
-			.message .content h1 {
-				font-size: 1.5rem;
-			}
-			.message .content h2 {
-				font-size: 1.3rem;
-			}
-			.message .content h3 {
-				font-size: 1.1rem;
+				color: #3e3832;
 			}
 			.message .content p {
 				margin: 0.5rem 0;
@@ -170,79 +205,73 @@
 				margin: 0.5rem 0;
 				padding-left: 1.5rem;
 			}
-			.message .content li {
-				margin: 0.25rem 0;
-			}
 			.message .content blockquote {
-				border-left: 4px solid #ddd;
+				border-left: 4px solid var(--border-color);
 				margin: 0.5rem 0;
 				padding: 0.5rem 1rem;
-				background-color: rgba(0, 0, 0, 0.05);
+				background-color: rgba(0, 0, 0, 0.02);
 				font-style: italic;
 			}
 			.message .content code {
-				background-color: rgba(0, 0, 0, 0.1);
+				background-color: rgba(0, 0, 0, 0.08);
 				padding: 0.2rem 0.4rem;
-				border-radius: 3px;
-				font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+				border-radius: 4px;
+				font-family: "Menlo", "Consolas", monospace;
 				font-size: 0.9em;
+				color: #2b2622;
 			}
 			.message .content pre {
-				background-color: #f8f9fa;
-				border: 1px solid #e9ecef;
-				border-radius: 4px;
+				background-color: #2d2d2d;
+				border-radius: 8px;
 				padding: 1rem;
 				margin: 0.5rem 0;
 				overflow-x: auto;
+				color: #f8f8f2;
 			}
 			.message .content pre code {
 				background-color: transparent;
 				padding: 0;
-				border-radius: 0;
+				color: inherit;
 			}
 			.message .content table {
 				border-collapse: collapse;
 				width: 100%;
-				margin: 0.5rem 0;
+				margin: 1rem 0;
 			}
 			.message .content th,
 			.message .content td {
-				border: 1px solid #ddd;
-				padding: 0.5rem;
+				border: 1px solid var(--border-color);
+				padding: 0.75rem;
 				text-align: left;
 			}
 			.message .content th {
-				background-color: rgba(0, 0, 0, 0.05);
-				font-weight: bold;
+				background-color: var(--user-msg-bg);
 			}
 			.message .content a {
 				color: var(--primary-color);
-				text-decoration: none;
-			}
-			.message .content a:hover {
 				text-decoration: underline;
 			}
-			.message .content hr {
-				border: none;
-				border-top: 1px solid #ddd;
-				margin: 1rem 0;
-			}
-			.message .content strong {
-				font-weight: bold;
-			}
-			.message .content em {
-				font-style: italic;
+			.message .content a:hover {
+				color: var(--hover-color);
 			}
 			footer {
 				padding: 1rem;
 				border-top: 1px solid var(--border-color);
+				background-color: #fffdf9;
 			}
 			#chat-form {
 				display: flex;
 				gap: 0.5rem;
+				align-items: flex-end;
 			}
 			#message-input {
 				flex-grow: 1;
+				resize: none;
+				overflow-y: hidden;
+				min-height: 50px; /* Corresponds to button padding + text size */
+				max-height: 250px;
+				box-sizing: border-box;
+				line-height: 1.5;
 			}
 			#debug-info {
 				background-color: #f5f5f5;
@@ -259,7 +288,7 @@
 	<body>
 		<div class="container">
 			<header>
-				<h1>MementoAI</h1>
+				<h1>Mitzitant</h1>
 				<button id="settings-toggle">Settings</button>
 			</header>
 			<div id="settings-panel" class="hidden">
@@ -296,11 +325,8 @@
 			<main id="chat-container"></main>
 			<footer>
 				<form id="chat-form">
-					<input type="text" id="message-input" placeholder="Start a conversation..." autocomplete="off" /><button
-						type="submit"
-					>
-						Send
-					</button>
+					<textarea id="message-input" rows="1" placeholder="Start a conversation..." autocomplete="off"></textarea>
+					<button type="submit">Send</button>
 				</form>
 			</footer>
 		</div>
@@ -379,7 +405,7 @@ Example interaction:
 User: "Hey, can you remind me to submit the report tomorrow? Also, I finished the design mockup task."
 (Your memory shows a task with id "task_123" for "Design mockup")
 Your Response: Of course, I've added a reminder to submit the report for tomorrow. Great job finishing the mockup!|||MEMORY|||{"add":{"tasks":[{"description":"Submit the report","dueDate":"2025-07-29T23:59:59"}]},"update":{"tasks":[{"id":"task_123","status":"completed"}]}}`,
-					reminders: [],
+					reminders: [], // Restored
 					selectedModel: "",
 					allModels: []
 				};
@@ -404,19 +430,14 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							log("No saved state found, using defaults");
 						}
 						systemPromptTextarea.value = state.systemPrompt;
-
-						// Restore selected model
 						if (state.selectedModel) {
 							modelSelect.value = state.selectedModel;
 							log(`Restored selected model: ${state.selectedModel}`);
 						}
-
-						// Restore models if available
 						if (state.allModels && state.allModels.length > 0) {
 							log(`Restoring ${state.allModels.length} cached models`);
 							populateModels(state.allModels);
 						}
-
 						renderConversation();
 					} catch (error) {
 						log(`Error loading state: ${error.message}`);
@@ -447,6 +468,45 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				};
 
 				// --- UI RENDERING ---
+				const collapsePreviousMessages = () => {
+					// 1. Find and dismantle any existing collapsible wrapper
+					const existingDetails = chatContainer.querySelector("details.previous-conversation");
+					if (existingDetails) {
+						const parent = existingDetails.parentNode;
+						// Move all message elements back to the parent, before the details element
+						existingDetails.querySelectorAll(".message").forEach((msg) => {
+							parent.insertBefore(msg, existingDetails);
+						});
+						// Now that it's empty of messages, remove the wrapper
+						parent.removeChild(existingDetails);
+					}
+
+					// 2. Proceed with the wrapping logic on a clean, flat DOM
+					const allMessages = Array.from(chatContainer.querySelectorAll(".message"));
+					const lastAssistantMessageIndex = allMessages
+						.map((el) => el.classList.contains("assistant"))
+						.lastIndexOf(true);
+
+					// If there's no assistant message or only one, no need to collapse
+					if (lastAssistantMessageIndex <= 0) {
+						return;
+					}
+
+					const messagesToCollapse = allMessages.slice(0, lastAssistantMessageIndex);
+
+					if (messagesToCollapse.length > 0) {
+						const details = document.createElement("details");
+						details.className = "previous-conversation";
+						const summary = document.createElement("summary");
+						summary.textContent = `View ${messagesToCollapse.length} previous message(s)`;
+						details.appendChild(summary);
+
+						messagesToCollapse.forEach((msg) => details.appendChild(msg));
+
+						chatContainer.prepend(details);
+					}
+				};
+
 				const addMessageToUI = (role, content, model = null) => {
 					const messageDiv = document.createElement("div");
 					messageDiv.className = `message ${role}`;
@@ -462,19 +522,8 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					contentDiv.className = "content";
 
 					if (role === "assistant") {
-						// Render markdown for assistant messages
-						try {
-							// Pre-process content to ensure line breaks are preserved
-							const processedContent = content.replace(/\n/g, "\n\n");
-							contentDiv.innerHTML = marked.parse(processedContent);
-						} catch (error) {
-							log(`Markdown parsing error: ${error.message}`);
-							// Fallback: preserve line breaks manually
-							contentDiv.innerHTML = content.replace(/\n/g, "<br>");
-						}
+						contentDiv.innerHTML = marked.parse(content);
 					} else {
-						// Keep user messages as plain text with preserved whitespace
-						contentDiv.style.whiteSpace = "pre-wrap";
 						contentDiv.textContent = content;
 					}
 
@@ -490,6 +539,7 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							addMessageToUI(msg.role, msg.content, msg.model);
 						});
 					}
+					collapsePreviousMessages();
 				};
 
 				// --- API INTERACTION ---
@@ -507,16 +557,13 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				// --- MODEL FILTERING ---
 				const filterModels = () => {
 					if (!state.allModels || state.allModels.length === 0) return;
-
 					const showOnlyFree = freeFilter.checked;
 					const searchText = modelSearch.value.toLowerCase().trim();
-
 					const filteredModels = state.allModels.filter((model) => {
 						const nameMatch = searchText === "" || model.name.toLowerCase().includes(searchText);
-						const freeMatch = !showOnlyFree || model.name.toLowerCase().includes("free");
+						const freeMatch = !showOnlyFree || (model.pricing && model.pricing.prompt === "0");
 						return nameMatch && freeMatch;
 					});
-
 					log(`Filtered models: ${filteredModels.length} of ${state.allModels.length}`);
 					populateModels(filteredModels);
 				};
@@ -524,57 +571,38 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				const populateModels = (models) => {
 					const currentSelection = modelSelect.value;
 					modelSelect.innerHTML = "";
-
 					models.forEach((model) => {
 						const option = document.createElement("option");
 						option.value = model.id;
 						option.textContent = model.name || model.id;
 						modelSelect.appendChild(option);
 					});
-
-					// Restore selection if it still exists
 					if (currentSelection && models.find((m) => m.id === currentSelection)) {
 						modelSelect.value = currentSelection;
 					} else if (state.selectedModel && models.find((m) => m.id === state.selectedModel)) {
 						modelSelect.value = state.selectedModel;
 					}
 				};
+
 				const fetchModels = async () => {
 					log("Starting to fetch models...");
 					const apiKey = getApiKey();
 					if (!apiKey) return;
-
 					try {
-						log("Making request to OpenRouter models endpoint...");
-						const response = await fetch("https://openrouter.ai/api/v1/models", {
-							headers: {
-								Authorization: `Bearer ${apiKey}`,
-								"Content-Type": "application/json"
-							}
-						});
-
-						log(`Response status: ${response.status} ${response.statusText}`);
-
+						const response = await fetch("https://openrouter.ai/api/v1/models");
 						if (!response.ok) {
 							const errorText = await response.text();
-							log(`API Error Response: ${errorText}`);
 							throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
 						}
-
 						const data = await response.json();
-						log(`Received ${data.data ? data.data.length : 0} models`);
-
 						if (data.data && Array.isArray(data.data)) {
-							state.allModels = data.data;
+							state.allModels = data.data.sort((a, b) => a.name.localeCompare(b.name));
 							saveState();
 							filterModels();
 							log("Models fetched and cached successfully");
-						} else {
-							log("Unexpected response format: " + JSON.stringify(data));
 						}
 					} catch (error) {
 						log(`Error fetching models: ${error.message}`);
-						console.error("Failed to fetch models:", error);
 						alert(`Error fetching models: ${error.message}`);
 					}
 				};
@@ -582,10 +610,9 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				// --- TIME CONTEXT GENERATION ---
 				const getCurrentTimeContext = () => {
 					const now = new Date();
-					return `### CRITICAL TIME CONTEXT (Current Time)
-- UTC Timestamp: ${now.toISOString()}
-- User's Local Time: ${now.toLocaleString()}
-- User's Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
+					return `### CRITICAL TIME CONTEXT (Current Time)\n- UTC Timestamp: ${now.toISOString()}\n- User's Local Time: ${now.toLocaleString()}\n- User's Timezone: ${
+						Intl.DateTimeFormat().resolvedOptions().timeZone
+					}`;
 				};
 
 				const handleChatSubmit = async (event) => {
@@ -593,44 +620,35 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					const userMessage = messageInput.value.trim();
 					if (!userMessage) return;
 
-					log(`User message: ${userMessage}`);
-					addMessageToUI("user", userMessage);
+					// Add user message to state first, then update UI
 					state.conversation.push({ role: "user", content: userMessage });
+					addMessageToUI("user", userMessage);
+					collapsePreviousMessages();
+
 					messageInput.value = "";
+					messageInput.style.height = "auto";
 
 					const apiKey = getApiKey();
 					if (!apiKey) return;
 
 					const selectedModel = modelSelect.value || "openai/gpt-3.5-turbo";
 					log(`Using model: ${selectedModel}`);
-
-					// Save selected model
 					state.selectedModel = selectedModel;
-					saveState();
 
-					// Construct the system context
 					const memoryContext = `### USER'S CURRENT MEMORY (with IDs)\n${JSON.stringify(state.memory, null, 2)}`;
 					const finalSystemMessage = `${state.systemPrompt}\n\n${getCurrentTimeContext()}\n\n${memoryContext}`;
-
 					const reinforcementPrompt = {
 						role: "system",
-						content: `REMINDER: Your task is to respond conversationally AND manage memory. After your text response, you MUST use the "|||MEMORY|||" separator followed by a single, valid JSON object specifying 'add', 'update', or 'delete' actions as defined in the main system prompt. If no actions are needed, use an empty object {}. Now, process the user's following message.\n\n${getCurrentTimeContext()}`
+						content: `REMINDER: Your task is to respond conversationally AND manage memory. After your text response, you MUST use the "|||MEMORY|||" separator followed by a single, valid JSON object specifying 'add', 'update', or 'delete' actions. If no actions are needed, use an empty object {}. Now, process the user's following message.\n\n${getCurrentTimeContext()}`
 					};
 
-					const olderConversation = state.conversation.slice(0, -1);
-					const latestUserMessage = state.conversation.slice(-1)[0];
+					const messagesForApi = state.conversation.slice();
+					messagesForApi.splice(-1, 0, reinforcementPrompt);
 
 					const payload = {
 						model: selectedModel,
-						messages: [
-							{ role: "system", content: finalSystemMessage },
-							...olderConversation,
-							reinforcementPrompt,
-							latestUserMessage
-						]
+						messages: [{ role: "system", content: finalSystemMessage }, ...messagesForApi]
 					};
-
-					log("Sending request to chat API...");
 
 					try {
 						const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -642,48 +660,41 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							body: JSON.stringify(payload)
 						});
 
-						log(`Chat API response status: ${response.status} ${response.statusText}`);
-
 						if (!response.ok) {
 							const errorText = await response.text();
-							log(`Chat API Error Response: ${errorText}`);
 							throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
 						}
-
 						const data = await response.json();
-						log("Received response from chat API");
-
 						let assistantResponse = data.choices[0].message.content;
 						const parts = assistantResponse.split("|||MEMORY|||");
 						const conversationalPart = parts[0].trim();
-
 						if (parts.length > 1) {
 							try {
 								const memoryActions = JSON.parse(parts[1].trim());
-								log(`Memory actions: ${JSON.stringify(memoryActions)}`);
 								updateMemory(memoryActions);
 							} catch (e) {
 								log(`Failed to parse memory JSON: ${e.message}`);
-								console.error("Failed to parse memory JSON:", e);
 							}
 						}
 
-						addMessageToUI("assistant", conversationalPart, selectedModel);
+						// Add assistant message to state and UI
 						state.conversation.push({ role: "assistant", content: conversationalPart, model: selectedModel });
+						addMessageToUI("assistant", conversationalPart, selectedModel);
+						collapsePreviousMessages();
+
 						saveState();
 					} catch (error) {
 						log(`Chat API Error: ${error.message}`);
-						console.error("Chat API Error:", error);
 						addMessageToUI("error", `Error: ${error.message}`);
 					}
 				};
 
-				// --- MEMORY & REMINDERS ---
+				// --- MEMORY & REMINDERS (RESTORED) ---
 				const updateMemory = (actions) => {
 					const now = Date.now();
 					log(`Updating memory with actions: ${JSON.stringify(actions)}`);
 
-					// Handle Deletions First
+					// Deletions
 					if (actions.delete) {
 						for (const type in actions.delete) {
 							if (state.memory[type] && Array.isArray(actions.delete[type])) {
@@ -693,7 +704,7 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 						}
 					}
 
-					// Handle Updates
+					// Updates
 					if (actions.update) {
 						for (const type in actions.update) {
 							if (state.memory[type] && Array.isArray(actions.update[type])) {
@@ -707,26 +718,26 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 						}
 					}
 
-					// Handle Additions Last
+					// Additions
 					if (actions.add) {
 						for (const type in actions.add) {
 							if (state.memory[type] && Array.isArray(actions.add[type])) {
 								actions.add[type].forEach((newItem, index) => {
 									newItem.id = `${type.slice(0, -1)}_${now + index}`;
 									state.memory[type].push(newItem);
+									// Check if a reminder needs to be scheduled
 									if (type === "tasks" && newItem.dueDate) {
-										scheduleReminder(newItem.description, new Date(newItem.dueDate), "task");
+										scheduleReminder(newItem.description, new Date(newItem.dueDate));
 									}
 								});
 							}
 						}
 					}
-
 					log("Memory updated successfully");
 					saveState();
 				};
 
-				const scheduleReminder = (text, timestamp, type) => {
+				const scheduleReminder = (text, timestamp) => {
 					const now = new Date();
 					const delay = timestamp.getTime() - now.getTime();
 					if (delay > 0 && navigator.serviceWorker.controller) {
@@ -734,7 +745,7 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							type: "schedule-reminder",
 							payload: { text: text, delay: delay }
 						});
-						log(`Reminder scheduled: "${text}"`);
+						log(`Reminder scheduled via Service Worker: "${text}"`);
 					} else if (delay > 0) {
 						log("Using setTimeout fallback for reminder");
 						setTimeout(() => {
@@ -752,6 +763,16 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							new Notification("MementoAI", { body: "Notifications are now enabled." });
 						}
 					});
+				};
+
+				// --- PWA SERVICE WORKER (RESTORED) ---
+				const registerServiceWorker = () => {
+					if ("serviceWorker" in navigator) {
+						navigator.serviceWorker
+							.register("sw.js") // Assumes sw.js is in the root directory
+							.then(() => log("Service Worker registered successfully"))
+							.catch((error) => log(`Service Worker registration failed: ${error.message}`));
+					}
 				};
 
 				const exportMemory = () => {
@@ -773,7 +794,6 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				const importMemory = (event) => {
 					const file = event.target.files[0];
 					if (!file) return;
-
 					const reader = new FileReader();
 					reader.onload = (e) => {
 						try {
@@ -781,7 +801,7 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 							if (importedState.conversation && importedState.memory) {
 								state = importedState;
 								saveState();
-								loadState();
+								loadState(); // This will call renderConversation()
 								log("Memory imported successfully");
 								alert("Memory imported successfully!");
 							} else {
@@ -795,23 +815,13 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 					reader.readAsText(file);
 				};
 
-				// --- PWA SERVICE WORKER ---
-				const registerServiceWorker = () => {
-					if ("serviceWorker" in navigator) {
-						navigator.serviceWorker
-							.register("sw.js")
-							.then(() => log("Service Worker registered successfully"))
-							.catch((error) => log(`Service Worker registration failed: ${error.message}`));
-					}
-				};
-
 				// --- INITIALIZATION ---
 				const initializeApp = () => {
 					log("Initializing MementoAI...");
 					loadApiKey();
 					loadState();
-					registerServiceWorker();
 					fetchModels();
+					registerServiceWorker(); // Restored call
 
 					if (!state.conversation || state.conversation.length === 0) {
 						addMessageToUI(
@@ -845,6 +855,19 @@ Your Response: Of course, I've added a reminder to submit the report for tomorro
 				clearDebugBtn.addEventListener("click", () => {
 					debugInfo.innerHTML = "";
 					log("Debug log cleared");
+				});
+
+				// Textarea auto-expand and submit logic
+				messageInput.addEventListener("input", () => {
+					messageInput.style.height = "auto";
+					messageInput.style.height = `${messageInput.scrollHeight}px`;
+				});
+
+				messageInput.addEventListener("keydown", (e) => {
+					if (e.key === "Enter" && !e.shiftKey) {
+						e.preventDefault();
+						chatForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+					}
 				});
 
 				initializeApp();
