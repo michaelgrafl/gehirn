@@ -145,12 +145,40 @@ async function getAvailableModels() {
 			}
 		});
 		
+		// Check if response is OK (status 200-299)
 		if (!response.ok) {
-			throw new Error('Failed to fetch models');
+			let errorMessage = 'Failed to fetch models';
+			
+			// Try to get error details from response
+			try {
+				const errorData = await response.json();
+				errorMessage = errorData.error?.message || `API error: ${response.status} ${response.statusText}`;
+			} catch (e) {
+				// If we can't parse error data, use status text
+				errorMessage = `API error: ${response.status} ${response.statusText}`;
+			}
+			
+			// Handle specific status codes
+			if (response.status === 401 || response.status === 403) {
+				errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
+			} else if (response.status === 429) {
+				errorMessage = 'Rate limit exceeded. Please try again later.';
+			}
+			
+			throw new Error(errorMessage);
 		}
 		
 		const data = await response.json();
 		console.log('Available models from API:', data.data?.length || 0);
+		
+		// Check if the response contains an error
+		if (data.error) {
+			let errorMessage = data.error.message || 'API returned an error';
+			if (errorMessage.toLowerCase().includes('auth') || errorMessage.toLowerCase().includes('key')) {
+				errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
+			}
+			throw new Error(errorMessage);
+		}
 		
 		// Return full model objects with proper filtering for free models
 		const models = data.data || [];

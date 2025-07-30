@@ -1,0 +1,67 @@
+{
+	"$schema": "https://charm.land/crush.json",
+	"lsp": {
+		"go": {
+			"command": "gopls"
+		},
+		"typescript": {
+			"command": "typescript-language-server",
+			"args": ["--stdio"]
+		},
+		"javascript": {
+			"command": "quick-lint-js",
+			"args": ["--lsp-server"]
+		},
+		"nix": {
+			"command": "nil"
+		}
+	},
+	"mcp": {
+		"filesystem": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@mcp/filesystem"],
+			"usageContext": "Provides secure, sandboxed file system access."
+		},
+		"github": {
+			"type": "http",
+			"url": "https://api.githubcopilot.com/mcp/",
+			"headers": {
+				"Authorization": "Bearer ${GITHUB_TOKEN}"
+			},
+			"usageContext": "Uses the official GitHub remote MCP server for repository operations. Requires OAuth or a PAT."
+		},
+		"playwright": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@playwright/mcp"],
+			"usageContext": "Microsoft's official Playwright MCP for browser automation and testing."
+		},
+		"browser-control": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@browsermcp/cli", "start"],
+			"usageContext": "Controls your existing local browser, maintaining your logged-in sessions."
+		},
+		"figma-dev-mode": {
+			"type": "sse",
+			"url": "http://127.0.0.1:3845/sse",
+			"usageContext": "Connects to the official Figma Dev Mode MCP server running in the Figma desktop app."
+		},
+		"svg-maker": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@genwave/svgmaker-mcp"],
+			"env": {
+				"SVGMAKER_API_KEY": "${SVGMAKER_API_KEY}"
+			},
+			"usageContext": "Generates and edits SVG assets from natural language using the SVGMaker API."
+		},
+		"documentation-retriever": {
+			"type": "stdio",
+			"command": "python3",
+			"args": ["/path/to/your/cloned/docret-mcp-server/main.py"],
+			"usageContext": "Fetches documentation from specified Python library sources."
+		}
+	}
+}

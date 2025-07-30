@@ -177,6 +177,7 @@ function loadSettingsContent() {
 			populateModelSelect(models);
 		}).catch(error => {
 			console.error('Error loading models:', error);
+			showNotification('Error loading models: ' + error.message, 'error');
 			// Fallback to simple model select
 			if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
 		});

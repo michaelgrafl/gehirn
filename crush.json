@@ -1,0 +1,15 @@
+{
+	"$schema": "https://charm.land/crush.json",
+	"mcp": {
+		"filesystem": {
+			"type": "stdio",
+			"command": "mcp-server-filesystem",
+			"args": ["C:\\Privat\\planer"]
+		},
+		"playwright": {
+			"type": "stdio",
+			"command": "npx",
+			"args": ["-y", "@playwright/mcp"]
+		}
+	}
+}

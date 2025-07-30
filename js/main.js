@@ -131,8 +131,12 @@ function setupEventListeners() {
 				showNotification('Refreshing models...', 'info');
 				getAvailableModels().then(models => {
 					console.log('Models refreshed:', models.length);
-					populateModelSelect(models);
-					showNotification('Models refreshed successfully', 'success');
+					if (models.length > 0) {
+						populateModelSelect(models);
+						showNotification('Models refreshed successfully', 'success');
+					} else {
+						showNotification('No models available. Please check your API key.', 'warning');
+					}
 				}).catch(error => {
 					console.error('Error refreshing models:', error);
 					showNotification('Error refreshing models: ' + error.message, 'error');
@@ -251,6 +255,8 @@ function setupEventListeners() {
 				}).catch(error => {
 					showNotification('Error filtering models: ' + error.message, 'error');
 				});
+			} else {
+				showNotification('Please set API key first', 'error');
 			}
 		});
 	}
@@ -323,6 +329,7 @@ function loadSavedData() {
 			populateModelSelect(models);
 		}).catch(error => {
 			console.error('Error loading models on page load:', error);
+			showNotification('Error loading models on page load: ' + error.message, 'error');
 		});
 	}
 }
@@ -397,8 +404,12 @@ function saveSettings() {
 		if (settings.apiKey && settings.apiKey.trim()) {
 			showNotification('Refreshing models with API key...', 'info');
 			getAvailableModels().then(models => {
-				populateModelSelect(models);
-				showNotification('Settings saved and models refreshed', 'success');
+				if (models.length > 0) {
+					populateModelSelect(models);
+					showNotification('Settings saved and models refreshed', 'success');
+				} else {
+					showNotification('Settings saved but no models available. Please check your API key.', 'warning');
+				}
 			}).catch(error => {
 				console.error('Error loading models:', error);
 				showNotification('Settings saved but error loading models: ' + error.message, 'warning');
