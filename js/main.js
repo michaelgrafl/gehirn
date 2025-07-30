@@ -341,17 +341,17 @@ function closeMemoryDialog() {
 }
 
 function showSettingsDialog() {
-	const dialog = document.getElementById('settings-dialog');
+	const dialog = document.getElementById('settings-panel');
 	if (dialog) {
-		dialog.style.display = 'block';
+		dialog.classList.remove('hidden');
 		loadSettingsContent();
 	}
 }
 
 function closeSettingsDialog() {
-	const dialog = document.getElementById('settings-dialog');
+	const dialog = document.getElementById('settings-panel');
 	if (dialog) {
-		dialog.style.display = 'none';
+		dialog.classList.add('hidden');
 	}
 }
 

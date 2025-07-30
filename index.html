@@ -66,14 +66,16 @@
 					<label for="system-prompt">System Prompt</label><textarea id="system-prompt" rows="12"></textarea>
 				</div>
 				<div class="button-group">
-					<button id="refresh-models">Refresh Models</button>
-					<button id="export-memory">Export Memory</button>
-					<button id="import-memory">Import Memory</button>
-					<button id="enable-notifications">Enable Notifications</button>
-					<button id="clear-debug">Clear Debug</button>
+					<button type="button" id="save-settings">Save Settings</button>
+					<button type="button" id="refresh-models">Refresh Models</button>
+					<button type="button" id="export-memory">Export Memory</button>
+					<button type="button" id="import-memory">Import Memory</button>
+					<button type="button" id="enable-notifications">Enable Notifications</button>
+					<button type="button" id="clear-debug">Clear Debug</button>
 					<input type="file" id="import-file-input" accept=".json" style="display: none" />
 				</div>
 				<div id="debug-info"></div>
+				<button type="button" id="close-settings">Close</button>
 			</div>
 		</form>
 			<main id="chat-container"></main>
