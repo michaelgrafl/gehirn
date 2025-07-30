@@ -3,7 +3,7 @@
 // Default settings
 const DEFAULT_SETTINGS = {
 	apiKey: '',
-	model: 'gpt-3.5-turbo',
+	model: 'openai/gpt-3.5-turbo',
 	temperature: 0.7,
 	maxTokens: 1000
 };
@@ -15,6 +15,28 @@ let appState = {
 	memory: '',
 	isOnline: navigator.onLine
 };
+
+// Load app state from localStorage
+function loadAppState() {
+    const savedState = localStorage.getItem('mementoai-app-state');
+    if (savedState) {
+        try {
+            const parsedState = JSON.parse(savedState);
+            appState = { ...appState, ...parsedState };
+        } catch (error) {
+            console.error('Error parsing app state:', error);
+        }
+    }
+    return appState;
+}
+
+// Initialize app state
+function initializeAppState() {
+    loadAppState();
+    loadSettings();
+    loadConversation();
+    loadMemory();
+}
 
 // Load settings from localStorage
 function loadSettings() {
@@ -209,4 +231,18 @@ function clearAllData() {
 		console.error('Error clearing all data:', error);
 		return false;
 	}
+}
+// Get app state
+function getAppState() {
+    return { ...appState };
+}
+
+// Save app state
+function saveAppState(state) {
+    appState = { ...appState, ...state };
+    try {
+        localStorage.setItem('mementoai-app-state', JSON.stringify(appState));
+    } catch (error) {
+        console.error('Error saving app state:', error);
+    }
 }

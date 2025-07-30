@@ -1,11 +1,22 @@
-// Progressive Web App (PWA) Functions
-
-// Register service worker
+// DEBUG: Enhanced service worker registration with detailed logging for PWA
 function registerServiceWorker() {
+    console.log('=== PWA SERVICE WORKER DIAGNOSTICS ===');
+    console.log('Checking if serviceWorker is supported in PWA module...');
+    
     if ('serviceWorker' in navigator) {
+        console.log('ServiceWorker is supported in PWA module');
+        
+        console.log('Attempting to register service worker at path: /sw.js');
+        console.log('Current page origin:', window.location.origin);
+        console.log('Current page pathname:', window.location.pathname);
+        
         navigator.serviceWorker.register('/sw.js')
             .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                console.log('ServiceWorker registration SUCCESSFUL in PWA module');
+                console.log('  - Registration scope:', registration.scope);
+                console.log('  - Active worker:', registration.active ? 'EXISTS' : 'NONE');
+                console.log('  - Installing worker:', registration.installing ? 'EXISTS' : 'NONE');
+                console.log('  - Waiting worker:', registration.waiting ? 'EXISTS' : 'NONE');
                 
                 // Check for updates
                 registration.addEventListener('updatefound', () => {
@@ -15,6 +26,7 @@ function registerServiceWorker() {
                         if (installingWorker.state === 'installed') {
                             if (navigator.serviceWorker.controller) {
                                 // New content is available
+                                console.log('New content is available, showing update notification');
                                 showUpdateNotification();
                             } else {
                                 // Content is cached for offline use
@@ -26,26 +38,34 @@ function registerServiceWorker() {
                 
                 // Handle controller change
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    console.log('Service worker controller changed, reloading page');
                     window.location.reload();
                 });
                 
                 return registration;
             })
             .catch(error => {
-                console.error('ServiceWorker registration failed: ', error);
+                console.error('ServiceWorker registration FAILED in PWA module');
+                console.error('  - Error:', error.message);
+                console.error('  - Error stack:', error.stack);
                 return null;
             });
     } else {
-        console.log('Service workers are not supported.');
+        console.warn('ServiceWorker is NOT supported in this browser (PWA module)');
         return null;
     }
+    
+    console.log('=== END PWA SERVICE WORKER DIAGNOSTICS ===');
 }
+
+// Progressive Web App (PWA) Functions
 
 // Show update notification
 function showUpdateNotification() {
-    const notificationContainer = document.getElementById('notification-container');
+    const notificationContainer = document.getElementById('chat-container');
     
     if (!notificationContainer) {
+        console.log('Notification container not found, cannot show update notification');
         return;
     }
     
@@ -240,32 +260,45 @@ function setupBeforeUnload() {
 
 // Initialize PWA features
 function initPWA() {
+    console.log('=== INITIALIZING PWA FEATURES ===');
+    
     // Register service worker
+    console.log('Registering service worker...');
     registerServiceWorker();
     
     // Setup install prompt
+    console.log('Setting up install prompt...');
     setupInstallPrompt();
     
     // Check online status
+    console.log('Checking online status...');
     checkOnlineStatus();
     
     // Setup visibility change
+    console.log('Setting up visibility change...');
     setupVisibilityChange();
     
     // Setup before unload
+    console.log('Setting up before unload...');
     setupBeforeUnload();
     
     // Show milestone notification
+    console.log('Setting up milestone notification...');
     showMilestoneNotification();
     
     // Show daily summary notification
+    console.log('Setting up daily summary notification...');
     showDailySummaryNotification();
     
     // Show weekly summary notification
+    console.log('Setting up weekly summary notification...');
     showWeeklySummaryNotification();
     
     // Restore scheduled notifications
+    console.log('Restoring scheduled notifications...');
     restoreScheduledNotifications();
+    
+    console.log('=== PWA FEATURES INITIALIZED ===');
 }
 
 // Check if PWA is supported

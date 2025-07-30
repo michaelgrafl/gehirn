@@ -1,7 +1,7 @@
 // API Interaction - Functions for communicating with the AI API
 
 // API endpoint
-const API_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+const API_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
 
 // Send message to API
 async function sendMessageToAPI(message) {
@@ -138,7 +138,7 @@ async function getAvailableModels() {
 	}
 	
 	try {
-		const response = await fetch('https://api.openai.com/v1/models', {
+		const response = await fetch('https://openrouter.ai/api/v1/models', {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${settings.apiKey}`

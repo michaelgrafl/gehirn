@@ -2,7 +2,7 @@
 
 // Render messages in the conversation
 function renderMessages(messages) {
-	const messagesContainer = document.getElementById('messages');
+	const messagesContainer = document.getElementById('chat-container');
 	if (!messagesContainer) return;
 	
 	// Clear existing messages
@@ -167,19 +167,31 @@ function loadSettingsContent() {
 	const settings = getSettings();
 	
 	const apiKey = document.getElementById('api-key');
-	const model = document.getElementById('model');
-	const temperature = document.getElementById('temperature');
-	const maxTokens = document.getElementById('max-tokens');
+	const model = document.getElementById('model-select');
 	
 	if (apiKey) apiKey.value = settings.apiKey || '';
-	if (model) model.value = settings.model || 'gpt-3.5-turbo';
-	if (temperature) temperature.value = settings.temperature || 0.7;
-	if (maxTokens) maxTokens.value = settings.maxTokens || 1000;
+	
+	// Load available models and populate select if API key is available
+	if (settings.apiKey && navigator.onLine) {
+		getAvailableModels().then(models => {
+			populateModelSelect(models);
+		}).catch(error => {
+			console.error('Error loading models:', error);
+			// Fallback to simple model select
+			if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
+		});
+	} else {
+		// Fallback to simple model select
+		if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
+	}
+	
+	// Note: temperature and max-tokens are not in the HTML, using defaults
+	// These would need to be added to the HTML if we want to make them configurable
 }
 
 // Show typing indicator
 function showTypingIndicator() {
-	const messagesContainer = document.getElementById('messages');
+	const messagesContainer = document.getElementById('chat-container');
 	if (!messagesContainer) return;
 	
 	const typingDiv = document.createElement('div');
@@ -225,7 +237,7 @@ function updateOnlineStatusUI(isOnline) {
 
 // Update character count
 function updateCharacterCount() {
-	const input = document.getElementById('prompt-input');
+	const input = document.getElementById('message-input');
 	const counter = document.getElementById('char-counter');
 	
 	if (input && counter) {

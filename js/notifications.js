@@ -59,7 +59,7 @@ function showNotification(title, options = {}) {
 
 // Show an in-app notification
 function showInAppNotification(message, type = 'info', duration = 5000) {
-    const notificationContainer = document.getElementById('notification-container');
+    const notificationContainer = document.getElementById('chat-container');
     
     if (!notificationContainer) {
         return false;

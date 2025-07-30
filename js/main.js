@@ -1,3 +1,33 @@
+// DEBUG: Diagnostic logging for DOM element verification
+function logDiagnosticInfo() {
+  console.log('=== DOM ELEMENT DIAGNOSTICS ===');
+  
+  // Check critical DOM elements
+  const criticalElements = [
+    'prompt-form', 'prompt-input', 'chat-form', 'message-input',
+    'memory-btn', 'settings-btn', 'clear-btn',
+    'memory-dialog', 'settings-dialog',
+    'close-memory', 'close-settings',
+    'save-memory', 'save-settings',
+    'test-notification', 'messages', 'chat-container',
+    'api-key', 'model', 'temperature', 'max-tokens',
+    'settings-toggle', 'settings-panel'
+  ];
+  
+  console.log('Checking critical DOM elements:');
+  criticalElements.forEach(id => {
+    const element = document.getElementById(id);
+    console.log(`Element '${id}': ${element ? 'EXISTS' : 'MISSING'}`);
+    if (element) {
+      console.log(`  - Tag: ${element.tagName}`);
+      console.log(`  - Type: ${element.type || 'N/A'}`);
+      console.log(`  - Classes: ${element.className || 'none'}`);
+    }
+  });
+  
+  console.log('=== END DOM ELEMENT DIAGNOSTICS ===');
+}
+
 // Main Application - Initialization and Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
 	// Initialize the application
@@ -5,22 +35,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
-	// Set up event listeners
-	setupEventListeners();
-	
-	// Load saved data
-	loadSavedData();
-	
-	// Initialize service worker
-	initServiceWorker();
-	
-	// Check for updates
-	checkForUpdates();
+  console.log('=== APP INITIALIZATION STARTED ===');
+  
+  // DEBUG: Run diagnostic checks first
+  logDiagnosticInfo();
+  
+  // Set up event listeners
+  console.log('Setting up event listeners...');
+  setupEventListeners();
+  
+  // Load saved data
+  console.log('Loading saved data...');
+  loadSavedData();
+  
+  // Initialize PWA features (includes service worker)
+  console.log('Initializing PWA features...');
+  initPWA();
+  
+  // Check for updates
+  console.log('Checking for updates...');
+  checkForUpdates();
+  
+  // Test model loading
+  console.log('Testing model loading...');
+  testModelLoading();
+  
+  console.log('=== APP INITIALIZATION COMPLETED ===');
 }
 
 function setupEventListeners() {
 	// Form submission
-	const form = document.getElementById('prompt-form');
+	const form = document.getElementById('chat-form');
 	if (form) {
 		form.addEventListener('submit', handleFormSubmit);
 	}
@@ -75,6 +120,145 @@ function setupEventListeners() {
 	
 	// Window resize
 	window.addEventListener('resize', handleResize);
+	// Refresh models button
+	const refreshModelsBtn = document.getElementById('refresh-models');
+	if (refreshModelsBtn) {
+		refreshModelsBtn.addEventListener('click', () => {
+			const settings = getSettings();
+			if (settings.apiKey) {
+				getAvailableModels().then(models => {
+					populateModelSelect(models);
+					showNotification('Models refreshed successfully', 'success');
+				}).catch(error => {
+					showNotification('Error refreshing models: ' + error.message, 'error');
+				});
+			} else {
+				showNotification('Please set API key first', 'error');
+			}
+		});
+	}
+	
+	// Export memory button
+	const exportMemoryBtn = document.getElementById('export-memory');
+	if (exportMemoryBtn) {
+		exportMemoryBtn.addEventListener('click', () => {
+			const memory = getMemory();
+			if (memory) {
+				const blob = new Blob([memory], { type: 'text/plain' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'mementoai-memory.txt';
+				a.click();
+				URL.revokeObjectURL(url);
+				showNotification('Memory exported successfully', 'success');
+			} else {
+				showNotification('No memory to export', 'warning');
+			}
+		});
+	}
+	
+	// Import memory button
+	const importMemoryBtn = document.getElementById('import-memory');
+	if (importMemoryBtn) {
+		importMemoryBtn.addEventListener('click', () => {
+			const fileInput = document.getElementById('import-file-input');
+			if (fileInput) {
+				fileInput.click();
+			}
+		});
+	}
+	
+	// Import file input
+	const importFileInput = document.getElementById('import-file-input');
+	if (importFileInput) {
+		importFileInput.addEventListener('change', (event) => {
+			const file = event.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const content = e.target.result;
+					saveMemoryData(content);
+					showNotification('Memory imported successfully', 'success');
+				};
+				reader.readAsText(file);
+			}
+		});
+	}
+	
+	// Enable notifications button
+	const enableNotificationsBtn = document.getElementById('enable-notifications');
+	if (enableNotificationsBtn) {
+		enableNotificationsBtn.addEventListener('click', () => {
+			if ('Notification' in window) {
+				Notification.requestPermission().then(permission => {
+					if (permission === 'granted') {
+						showNotification('Notifications enabled', 'success');
+					} else {
+						showNotification('Notifications denied', 'error');
+					}
+				});
+			} else {
+				showNotification('Notifications not supported', 'error');
+			}
+		});
+	}
+	
+	// Clear debug button
+	const clearDebugBtn = document.getElementById('clear-debug');
+	if (clearDebugBtn) {
+		clearDebugBtn.addEventListener('click', () => {
+			const debugInfo = document.getElementById('debug-info');
+			if (debugInfo) {
+				debugInfo.innerHTML = '';
+				showNotification('Debug info cleared', 'success');
+			}
+		});
+	}
+	
+	// Settings toggle button
+	const settingsToggle = document.getElementById('settings-toggle');
+	if (settingsToggle) {
+		settingsToggle.addEventListener('click', () => {
+			const settingsPanel = document.getElementById('settings-panel');
+			if (settingsPanel) {
+				settingsPanel.classList.toggle('hidden');
+			}
+		});
+	}
+	
+	// Free filter checkbox
+	const freeFilter = document.getElementById('free-filter');
+	if (freeFilter) {
+		freeFilter.addEventListener('change', () => {
+			const settings = getSettings();
+			if (settings.apiKey) {
+				getAvailableModels().then(models => {
+					if (freeFilter.checked) {
+						models = models.filter(model => model.id.includes('free') || model.id.includes('open'));
+					}
+					populateModelSelect(models);
+				}).catch(error => {
+					showNotification('Error filtering models: ' + error.message, 'error');
+				});
+			}
+		});
+	}
+	
+	// Model search input
+	const modelSearch = document.getElementById('model-search');
+	if (modelSearch) {
+		modelSearch.addEventListener('input', (e) => {
+			const searchTerm = e.target.value.toLowerCase();
+			const modelSelect = document.getElementById('model-select');
+			if (modelSelect) {
+				Array.from(modelSelect.options).forEach(option => {
+					const visible = option.text.toLowerCase().includes(searchTerm);
+					option.style.display = visible ? '' : 'none';
+				});
+			}
+		});
+	}
 	
 	// Online/offline events
 	window.addEventListener('online', handleOnline);
@@ -84,7 +268,7 @@ function setupEventListeners() {
 function handleFormSubmit(event) {
 	event.preventDefault();
 	
-	const input = document.getElementById('prompt-input');
+	const input = document.getElementById('message-input');
 	if (input && input.value.trim()) {
 		sendMessage(input.value.trim());
 		input.value = '';
@@ -94,7 +278,7 @@ function handleFormSubmit(event) {
 
 function handleResize() {
 	// Adjust UI based on window size
-	const messagesContainer = document.getElementById('messages');
+	const messagesContainer = document.getElementById('chat-container');
 	if (messagesContainer && window.innerWidth < 600) {
 		messagesContainer.style.height = '300px';
 	} else if (messagesContainer) {
@@ -172,16 +356,14 @@ function saveMemory() {
 
 function saveSettings() {
 	const apiKey = document.getElementById('api-key');
-	const model = document.getElementById('model');
-	const temperature = document.getElementById('temperature');
-	const maxTokens = document.getElementById('max-tokens');
+	const model = document.getElementById('model-select');
 	
-	if (apiKey && model && temperature && maxTokens) {
+	if (apiKey && model) {
 		const settings = {
 			apiKey: apiKey.value,
 			model: model.value,
-			temperature: parseFloat(temperature.value),
-			maxTokens: parseInt(maxTokens.value)
+			temperature: 0.7, // Default value
+			maxTokens: 1000 // Default value
 		};
 		
 		saveSettingsData(settings);
@@ -218,18 +400,6 @@ function showTestNotification() {
 			window.focus();
 			notification.close();
 		};
-	}
-}
-
-function initServiceWorker() {
-	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('/sw.js')
-			.then(registration => {
-				console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			})
-			.catch(error => {
-				console.log('ServiceWorker registration failed: ', error);
-			});
 	}
 }
 
@@ -272,4 +442,72 @@ function showUpdateNotification() {
 			window.location.reload();
 		});
 	}
+}
+
+// DEBUG: Test model loading mechanism
+function testModelLoading() {
+  console.log('=== MODEL LOADING TEST ===');
+  
+  // Check if we can get settings
+  try {
+    const settings = getSettings();
+    console.log('Settings loaded:', settings);
+    
+    // Check if model is set
+    if (settings.model) {
+      console.log('Current model:', settings.model);
+    } else {
+      console.warn('No model set in settings');
+    }
+    
+    // Check if API key is set
+    if (settings.apiKey) {
+      console.log('API key is set (length:', settings.apiKey.length, ')');
+    } else {
+      console.warn('No API key set');
+    }
+    
+    // Test model loading from API
+    if (settings.apiKey && navigator.onLine) {
+      console.log('Testing model loading from API...');
+      getAvailableModels().then(models => {
+        console.log('Available models:', models);
+        console.log('=== MODEL LOADING TEST COMPLETED ===');
+      }).catch(error => {
+        console.error('Error loading models:', error);
+        console.log('=== MODEL LOADING TEST COMPLETED WITH ERRORS ===');
+      });
+    } else {
+      console.log('Skipping API model test (no API key or offline)');
+      console.log('=== MODEL LOADING TEST COMPLETED ===');
+    }
+  } catch (error) {
+    console.error('Error testing model loading:', error);
+    console.log('=== MODEL LOADING TEST COMPLETED WITH ERRORS ===');
+  }
+}
+
+// Populate model select dropdown with available models
+function populateModelSelect(models) {
+  const modelSelect = document.getElementById('model-select');
+  if (!modelSelect) return;
+  
+  // Clear existing options
+  modelSelect.innerHTML = '';
+  
+  // Add new options
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.id;
+    option.textContent = model.id;
+    modelSelect.appendChild(option);
+  });
+  
+  // Set current model as selected
+  const settings = getSettings();
+  if (settings.model) {
+    modelSelect.value = settings.model;
+  }
+  
+  console.log('Model select populated with', models.length, 'models');
 }
