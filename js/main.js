@@ -121,7 +121,7 @@ function setupEventListeners() {
 	// Window resize
 	window.addEventListener('resize', handleResize);
 	// Refresh models button
-	const refreshModelsBtn = document.getElementById('refresh-models-btn');
+	const refreshModelsBtn = document.getElementById('refresh-models');
 	if (refreshModelsBtn) {
 		refreshModelsBtn.addEventListener('click', () => {
 			const settings = getSettings();
@@ -243,9 +243,8 @@ function setupEventListeners() {
 					let filteredModels = models;
 					if (freeFilter.checked) {
 						filteredModels = models.filter(model => {
-							const id = model.id?.toLowerCase() || '';
-							const name = model.name?.toLowerCase() || '';
-							return id.includes('free') || name.includes('free');
+							const pricing = model.pricing;
+							return pricing && pricing.prompt === "0" && pricing.completion === "0";
 						});
 					}
 					populateModelSelect(filteredModels);
@@ -377,9 +376,24 @@ function saveSettings() {
 			maxTokens: 1000 // Default value
 		};
 		
+		// Save the settings
 		saveSettingsData(settings);
+		
+		// If API key was just set or changed, refresh models
+		if (settings.apiKey && settings.apiKey.trim()) {
+			showNotification('Refreshing models with new API key...', 'info');
+			getAvailableModels().then(models => {
+				populateModelSelect(models);
+				showNotification('Settings saved and models refreshed', 'success');
+			}).catch(error => {
+				console.error('Error loading models:', error);
+				showNotification('Settings saved but error loading models: ' + error.message, 'warning');
+			});
+		} else {
+			showNotification('Settings saved', 'success');
+		}
+		
 		closeSettingsDialog();
-		showNotification('Settings saved', 'success');
 	}
 }
 
