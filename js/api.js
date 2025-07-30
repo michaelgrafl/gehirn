@@ -150,9 +150,35 @@ async function getAvailableModels() {
 		}
 		
 		const data = await response.json();
-		return data.data
-			.filter(model => model.id.includes('gpt'))
-			.map(model => model.id);
+		console.log('Available models from API:', data.data?.length || 0);
+		
+		// Return full model objects with proper filtering for free models
+		const models = data.data || [];
+		
+		// Include all models but prioritize free ones
+		const filteredModels = models.filter(model => {
+			const id = model.id?.toLowerCase() || '';
+			const name = model.name?.toLowerCase() || '';
+			const pricing = model.pricing;
+			
+			// Check if model is free (pricing.prompt === "0")
+			const isFree = pricing && pricing.prompt === "0" && pricing.completion === "0";
+			
+			// Include all models but mark free ones
+			return true; // Include all models for now
+		});
+		
+		// Sort models: free ones first, then others
+		const sortedModels = filteredModels.sort((a, b) => {
+			const aFree = a.pricing && a.pricing.prompt === "0" && a.pricing.completion === "0";
+			const bFree = b.pricing && b.pricing.prompt === "0" && b.pricing.completion === "0";
+			
+			if (aFree && !bFree) return -1;
+			if (!aFree && bFree) return 1;
+			return 0;
+		});
+		
+		return sortedModels;
 			
 	} catch (error) {
 		console.error('Error fetching models:', error);

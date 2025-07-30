@@ -121,18 +121,24 @@ function setupEventListeners() {
 	// Window resize
 	window.addEventListener('resize', handleResize);
 	// Refresh models button
-	const refreshModelsBtn = document.getElementById('refresh-models');
+	const refreshModelsBtn = document.getElementById('refresh-models-btn');
 	if (refreshModelsBtn) {
 		refreshModelsBtn.addEventListener('click', () => {
 			const settings = getSettings();
-			if (settings.apiKey) {
+			console.log('Refresh models clicked - API key present:', !!settings.apiKey);
+			
+			if (settings.apiKey && settings.apiKey.trim()) {
+				showNotification('Refreshing models...', 'info');
 				getAvailableModels().then(models => {
+					console.log('Models refreshed:', models.length);
 					populateModelSelect(models);
 					showNotification('Models refreshed successfully', 'success');
 				}).catch(error => {
+					console.error('Error refreshing models:', error);
 					showNotification('Error refreshing models: ' + error.message, 'error');
 				});
 			} else {
+				console.warn('No API key set, cannot refresh models');
 				showNotification('Please set API key first', 'error');
 			}
 		});
@@ -234,10 +240,15 @@ function setupEventListeners() {
 			const settings = getSettings();
 			if (settings.apiKey) {
 				getAvailableModels().then(models => {
+					let filteredModels = models;
 					if (freeFilter.checked) {
-						models = models.filter(model => model.id.includes('free') || model.id.includes('open'));
+						filteredModels = models.filter(model => {
+							const id = model.id?.toLowerCase() || '';
+							const name = model.name?.toLowerCase() || '';
+							return id.includes('free') || name.includes('free');
+						});
 					}
-					populateModelSelect(models);
+					populateModelSelect(filteredModels);
 				}).catch(error => {
 					showNotification('Error filtering models: ' + error.message, 'error');
 				});
@@ -489,25 +500,73 @@ function testModelLoading() {
 
 // Populate model select dropdown with available models
 function populateModelSelect(models) {
+  console.log('=== populateModelSelect STARTED ===');
+  console.log('Models to populate:', models.length);
+  
   const modelSelect = document.getElementById('model-select');
-  if (!modelSelect) return;
+  if (!modelSelect) {
+    console.warn('Model select element not found');
+    return;
+  }
   
   // Clear existing options
   modelSelect.innerHTML = '';
   
+  if (models.length === 0) {
+    console.warn('No models to populate');
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No models available';
+    option.disabled = true;
+    modelSelect.appendChild(option);
+    return;
+  }
+  
   // Add new options
-  models.forEach(model => {
+  models.forEach((model, index) => {
     const option = document.createElement('option');
     option.value = model.id;
-    option.textContent = model.id;
+    
+    // Create more descriptive label
+    const name = model.name || model.id;
+    const description = model.description ? ` - ${model.description.substring(0, 50)}...` : '';
+    
+    // Check for free models (price = 0)
+    let isFree = false;
+    const pricing = model.pricing;
+    
+    if (pricing && pricing.prompt === "0" && pricing.completion === "0") {
+      isFree = true;
+    }
+    
+    // Add visual indicators for free models
+    const freeIndicator = isFree ? '🔓 FREE: ' : '';
+    option.textContent = `${freeIndicator}${name}${description}`;
+    
+    // Add data attributes for filtering
+    if (isFree) {
+      option.setAttribute('data-free', 'true');
+    }
+    
     modelSelect.appendChild(option);
   });
   
   // Set current model as selected
   const settings = getSettings();
-  if (settings.model) {
+  if (settings.model && Array.from(modelSelect.options).some(opt => opt.value === settings.model)) {
     modelSelect.value = settings.model;
+  } else if (models.length > 0) {
+    // Select first free model if available, otherwise first model
+    const firstFreeModel = models.find(model =>
+      model.pricing && model.pricing.prompt === "0" && model.pricing.completion === "0"
+    );
+    
+    if (firstFreeModel) {
+      modelSelect.value = firstFreeModel.id;
+    } else {
+      modelSelect.value = models[0].id;
+    }
   }
   
-  console.log('Model select populated with', models.length, 'models');
+  console.log('Model select populated successfully with', models.length, 'models');
 }
