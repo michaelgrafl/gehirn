@@ -315,6 +315,16 @@ function loadSavedData() {
 	
 	// Load memory
 	loadMemory();
+	
+	// Load models if API key is available
+	const settings = getSettings();
+	if (settings.apiKey && navigator.onLine) {
+		getAvailableModels().then(models => {
+			populateModelSelect(models);
+		}).catch(error => {
+			console.error('Error loading models on page load:', error);
+		});
+	}
 }
 
 function clearConversation() {
@@ -369,8 +379,12 @@ function saveSettings() {
 	const model = document.getElementById('model-select');
 	
 	if (apiKey && model) {
+		// Get current settings to preserve API key if not changed
+		const currentSettings = getSettings();
+		const newApiKey = apiKey.value.trim();
+		
 		const settings = {
-			apiKey: apiKey.value,
+			apiKey: newApiKey || currentSettings.apiKey, // Preserve existing API key if new one is empty
 			model: model.value,
 			temperature: 0.7, // Default value
 			maxTokens: 1000 // Default value
@@ -381,7 +395,7 @@ function saveSettings() {
 		
 		// If API key was just set or changed, refresh models
 		if (settings.apiKey && settings.apiKey.trim()) {
-			showNotification('Refreshing models with new API key...', 'info');
+			showNotification('Refreshing models with API key...', 'info');
 			getAvailableModels().then(models => {
 				populateModelSelect(models);
 				showNotification('Settings saved and models refreshed', 'success');
