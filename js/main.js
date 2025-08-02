@@ -751,3 +751,55 @@ function populateModelSelect(models) {
   
   console.log('Model select populated successfully with', models.length, 'models');
 }
+
+// Toggle side panel
+function toggleSidePanel() {
+    const panel = document.querySelector('.side-panel');
+    const isActive = panel.classList.toggle('active');
+    const panelToggle = document.getElementById('panel-toggle');
+    
+    if (panelToggle) {
+        panelToggle.setAttribute('aria-expanded', isActive.toString());
+        
+        // Update button icon
+        const iconSpan = panelToggle.querySelector('span:not(.sr-only)');
+        if (iconSpan) {
+            iconSpan.textContent = isActive ? '✕' : '☰';
+        }
+    }
+}
+
+// Close side panel
+function closeSidePanel() {
+    const panel = document.querySelector('.side-panel');
+    panel.classList.remove('active');
+    
+    const panelToggle = document.getElementById('panel-toggle');
+    if (panelToggle) {
+        panelToggle.setAttribute('aria-expanded', 'false');
+        
+        // Update button icon
+        const iconSpan = panelToggle.querySelector('span:not(.sr-only)');
+        if (iconSpan) {
+            iconSpan.textContent = '☰';
+        }
+    }
+}
+
+// Attach event listeners
+document.getElementById('panel-toggle')?.addEventListener('click', toggleSidePanel);
+document.getElementById('panel-close')?.addEventListener('click', closeSidePanel);
+
+// Close panel when clicking outside on mobile
+document.addEventListener('click', (event) => {
+    const panel = document.querySelector('.side-panel');
+    const panelToggle = document.getElementById('panel-toggle');
+    const panelClose = document.getElementById('panel-close');
+    
+    if (window.innerWidth <= 600 && panel.classList.contains('active') && 
+        !panel.contains(event.target) && 
+        event.target !== panelToggle && 
+        event.target !== panelClose) {
+        closeSidePanel();
+    }
+});
