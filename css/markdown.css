@@ -53,26 +53,18 @@
 	text-decoration: underline;
 }
 
-.markdown code {
-	background-color: rgba(52, 152, 219, 0.1);
-	padding: calc(var(--spacing-unit) / 4);
-	border-radius: calc(var(--border-radius) / 2);
-	font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-	font-size: 0.9em;
-}
+.markdown code { background-color: #0b1220; padding: 2px 6px; border-radius: 6px }
 
 .markdown pre {
-	background-color: rgba(52, 152, 219, 0.1);
-	padding: var(--spacing-unit);
-	border-radius: var(--border-radius);
+	background-color: #0b1220;
+	padding: 12px;
+	border-radius: 10px;
 	overflow-x: auto;
 	margin-bottom: var(--margin);
+	border: 1px solid #1b2740;
 }
 
-.markdown pre code {
-	background-color: transparent;
-	padding: 0;
-}
+.markdown pre code { background-color: transparent; padding: 0 }
 
 .markdown blockquote {
 	border-left: 4px solid var(--accent-color);

@@ -1,129 +1,53 @@
-/* CSS Custom Properties and Animations */
 :root {
-	/* Color Scheme */
-	--bg-color: #f5f5f5;
-	--container-bg: #ffffff;
-	--text-color: #333333;
-	--secondary-text: #666666;
-	--border-color: #e0e0e0;
-	--accent-color: #3498db;
-	--hover-color: #2980b9;
-	--button-bg: #3498db;
-	--button-hover: #2980b9;
-	--input-border: #ddd;
-	--input-focus: #3498db;
-	--message-bg: #f9f9f9;
-	--message-hover: #f0f0f0;
-	--ai-bg: #e3f2fd;
-	--user-bg: #e8f5e9;
-	--memory-bg: #fff3e0;
-	--memory-border: #ffcc02;
-	--memory-hover: #ffe0b2;
-	--notification-bg: #4caf50;
-	--notification-hover: #45a049;
-	--delete-color: #dc3545;
-	--delete-hover: #c82333;
-	--edit-color: #ffc107;
-	--edit-hover: #e0a800;
-
-	/* Typography */
-	--font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-	--font-size: 16px;
-	--line-height: 1.6;
-
-	/* Spacing */
-	--spacing-unit: 8px;
-	--padding: var(--spacing-unit) * 2;
-	--margin: var(--spacing-unit) * 2;
-	--border-radius: 4px;
-
-	/* Shadows */
-	--box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	--hover-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-
-	/* Transitions */
-	--transition-speed: 0.3s;
+  --font-family: 'Crimson Pro', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font-size: 16px;
+  --line-height: 1.5;
+  --spacing-unit: 8px;
+  --padding: 16px;
+  --margin: 16px;
+  --border-radius: 10px;
+  --bg-color: #0b0f14;
+  --container-bg: #0f141b;
+  --surface: #121826;
+  --text-color: #e6edf3;
+  --secondary-text: #9fb0c3;
+  --border-color: #1f2a3a;
+  --input-border: #243347;
+  --input-focus: #3b82f6;
+  --button-bg: #3b82f6;
+  --button-hover: #2f6bd1;
+  --accent-color: #22c55e;
+  --hover-color: #16a34a;
+  --ai-bg: #0e1a2b;
+  --user-bg: #16263b;
+  --message-bg: #121a26;
+  --message-hover: #162030;
+  --delete-color: #ef4444;
+  --delete-hover: #dc2626;
+  --edit-color: #f59e0b;
+  --edit-hover: #d97706;
+  --memory-bg: #0e7490;
+  --box-shadow: 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.2);
+  --transition-speed: .2s;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg-color: #1a1a1a;
-		--container-bg: #2d2d2d;
-		--text-color: #f0f0f0;
-		--secondary-text: #b0b0b0;
-		--border-color: #444444;
-		--message-bg: #2d2d2d;
-		--message-hover: #3a3a3a;
-		--ai-bg: #1a237e;
-		--user-bg: #1b5e20;
-		--memory-bg: #e65100;
-		--memory-hover: #ef6c00;
-		--input-border: #555555;
-		--input-focus: #64b5f6;
-	}
+body.dark-mode {
+  --bg-color: #0b0f14;
 }
 
-/* Animations */
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-		transform: translateY(10px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
+.hidden { display: none !important }
 
-@keyframes pulse {
-	0% {
-		box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-	}
-	70% {
-		box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-	}
-	100% {
-		box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
-	}
-}
+.inline-status { margin: 8px 0; padding: 8px 12px; border-radius: 8px }
+.inline-status.info { background: #0b2942; color: #8ecaff }
+.inline-status.success { background: #0f3b24; color: #7ee1a8 }
+.inline-status.error { background: #3a0e14; color: #ff9aa2 }
 
-@keyframes slideIn {
-	from {
-		transform: translateX(100%);
-		opacity: 0;
-	}
-	to {
-		transform: translateX(0);
-		opacity: 1;
-	}
-}
+.activity-log { margin-top: 12px; display: flex; flex-direction: column; gap: 6px }
+.activity-item { padding: 8px 10px; border-radius: 8px; background: var(--surface); color: var(--text-color) }
+.activity-item.info { background: #0b2942 }
+.activity-item.success { background: #0f3b24 }
+.activity-item.warning { background: #3a2b0e }
+.activity-item.error { background: #3a0e14 }
 
-@keyframes highlight {
-	0% {
-		background-color: transparent;
-	}
-	50% {
-		background-color: rgba(52, 152, 219, 0.2);
-	}
-	100% {
-		background-color: transparent;
-	}
-}
-
-/* Loading animation */
-.loading {
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	border: 3px solid rgba(52, 152, 219, 0.3);
-	border-radius: 50%;
-	border-top-color: var(--accent-color);
-	animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
+.markdown pre code { display: block; padding: 12px; background: #0b1220; border-radius: 8px }
+.markdown code { background: #0b1220; padding: 2px 6px; border-radius: 6px }

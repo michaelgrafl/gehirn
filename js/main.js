@@ -64,10 +64,25 @@ function initApp() {
 }
 
 function setupEventListeners() {
-	// Form submission
+	// Form submission and composer UX
 	const form = document.getElementById('chat-form');
 	if (form) {
 		form.addEventListener('submit', handleFormSubmit);
+		const input = document.getElementById('message-input')
+		const sendBtn = document.getElementById('send-button')
+		if (input) {
+			try { input.value = '' } catch(e){}
+			if (sendBtn) sendBtn.disabled = true
+			input.addEventListener('input', () => {
+				if (sendBtn) sendBtn.disabled = !input.value.trim()
+			})
+			input.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter' && !e.shiftKey) {
+					e.preventDefault()
+					form.requestSubmit()
+				}
+			})
+		}
 	}
 	
 	// Memory button
@@ -275,6 +290,44 @@ function setupEventListeners() {
 			const settingsPanel = document.getElementById('settings-panel');
 			if (settingsPanel) {
 				settingsPanel.classList.toggle('hidden');
+				if (!settingsPanel.classList.contains('hidden')) {
+					settingsPanel.setAttribute('aria-busy', 'true')
+					loadSettingsContent()
+					settingsPanel.setAttribute('aria-busy', 'false')
+					const banner = document.getElementById('settings-banner')
+					const dismiss = document.getElementById('dismiss-settings-banner')
+					if (dismiss) dismiss.onclick = () => banner && banner.classList.add('hidden')
+					const toggleVis = document.getElementById('toggle-key-visibility')
+					const apiInput = document.getElementById('api-key')
+					if (toggleVis && apiInput) {
+						toggleVis.onclick = () => {
+							const isPassword = apiInput.type === 'password'
+							apiInput.type = isPassword ? 'text' : 'password'
+							toggleVis.textContent = isPassword ? 'Hide' : 'Show'
+							toggleVis.setAttribute('aria-pressed', String(isPassword))
+						}
+					}
+					const testBtn = document.getElementById('test-api-key')
+					if (testBtn) {
+						testBtn.onclick = () => {
+							const status = ensureSettingsStatus()
+							status.textContent = 'Validating API key...'
+							status.className = 'inline-status info'
+							validateApiKey().then(v => {
+								if (!v.valid) {
+									status.textContent = v.message || 'Invalid API key'
+									status.className = 'inline-status error'
+								} else {
+									status.textContent = 'API key is valid'
+									status.className = 'inline-status success'
+								}
+							}).catch(err => {
+								status.textContent = 'Error validating API key'
+								status.className = 'inline-status error'
+							})
+						}
+					}
+				}
 			}
 		});
 	}
@@ -331,9 +384,11 @@ function handleFormSubmit(event) {
 	event.preventDefault();
 	
 	const input = document.getElementById('message-input');
+	const sendBtn = document.getElementById('send-button')
 	if (input && input.value.trim()) {
 		sendMessage(input.value.trim());
 		input.value = '';
+		if (sendBtn) sendBtn.disabled = true
 		input.focus();
 	}
 }

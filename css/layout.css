@@ -20,12 +20,18 @@ body {
 }
 
 header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
 	margin-bottom: calc(var(--margin) * 2);
-	text-align: center;
 }
 
 header h1 {
-	margin-bottom: var(--margin);
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: .2px;
 	color: var(--text-color);
 }
 
@@ -35,13 +41,17 @@ header p {
 }
 
 footer {
+	position: sticky;
+	bottom: 0;
 	margin-top: calc(var(--margin) * 3);
 	padding-top: var(--padding);
 	border-top: 1px solid var(--border-color);
-	text-align: center;
-	color: var(--secondary-text);
-	font-size: 0.9em;
+	background: var(--bg-color);
 }
+
+#chat-form { display: flex; gap: 8px; align-items: flex-end }
+#chat-form textarea { flex: 1; min-height: 44px; max-height: 220px; resize: vertical }
+#chat-form button { height: 44px }
 
 footer a {
 	color: var(--accent-color);

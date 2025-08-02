@@ -8,11 +8,18 @@ function renderMessages(messages) {
 	// Clear existing messages
 	messagesContainer.innerHTML = '';
 	
-	// Add messages to container
-	messages.forEach(message => {
-		const messageElement = createMessageElement(message);
-		messagesContainer.appendChild(messageElement);
-	});
+	if (!messages || messages.length === 0) {
+		const empty = document.createElement('div')
+		empty.className = 'message assistant'
+		empty.innerHTML = '<div class="message-header"><span class="message-role">MementoAI</span></div><div class="message-content markdown"><p>Welcome! Paste your OpenRouter key in Settings, pick a model, then start chatting. Tips:<br>• Shift+Enter = newline<br>• Use Remember on AI replies to store notes</p></div>'
+		messagesContainer.appendChild(empty)
+	} else {
+		// Add messages to container
+		messages.forEach(message => {
+			const messageElement = createMessageElement(message);
+			messagesContainer.appendChild(messageElement);
+		});
+	}
 	
 	// Scroll to bottom
 	messagesContainer.scrollTop = messagesContainer.scrollHeight;

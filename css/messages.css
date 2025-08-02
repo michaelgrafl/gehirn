@@ -1,22 +1,26 @@
 /* Message Styles - Chat Messages */
-#messages {
+#chat-container {
 	margin-top: var(--margin);
-	height: 400px;
+	height: calc(100vh - 280px);
+	min-height: 320px;
 	overflow-y: auto;
 	border: 1px solid var(--border-color);
 	border-radius: var(--border-radius);
-	padding: var(--spacing-unit);
+	padding: calc(var(--spacing-unit) * 2);
 	background-color: var(--container-bg);
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
 }
 
 .message {
-	margin-bottom: var(--margin);
-	padding: var(--spacing-unit);
-	border-radius: var(--border-radius);
+	margin: 0;
+	padding: 12px 14px;
+	border-radius: 14px;
 	background-color: var(--message-bg);
 	box-shadow: var(--box-shadow);
 	transition: background-color var(--transition-speed), transform var(--transition-speed);
-	animation: fadeIn 0.3s ease-out;
+	animation: fadeIn 0.2s ease-out;
 }
 
 .message:hover {
@@ -32,26 +36,15 @@
 	background-color: var(--user-bg);
 }
 
-.message .timestamp {
-	font-size: 0.8em;
-	color: var(--secondary-text);
-	margin-bottom: calc(var(--spacing-unit) / 2);
-}
+.message-header { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; color: var(--secondary-text) }
+.message-role { font-weight: 600; color: var(--text-color) }
+.message-timestamp { font-size: 12px; opacity: .7 }
 
-.message .content {
-	font-size: var(--font-size);
-}
+.message-content { font-size: var(--font-size); color: var(--text-color) }
 
-.message .actions {
-	margin-top: calc(var(--spacing-unit) / 2);
-	display: flex;
-	gap: calc(var(--spacing-unit) / 2);
-}
-
-.message .actions button {
-	font-size: 0.8em;
-	padding: calc(var(--spacing-unit) / 4) calc(var(--spacing-unit) / 2);
-}
+.message-actions { margin-top: 6px; display: flex; gap: 6px }
+.message-action-btn { background: transparent; border: 1px solid var(--border-color); color: var(--secondary-text); padding: 4px 8px; border-radius: 8px; font-size: 12px }
+.message-action-btn:hover { background: var(--surface); color: var(--text-color) }
 
 .message .actions .btn-edit {
 	background-color: var(--edit-color);

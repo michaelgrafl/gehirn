@@ -45,8 +45,10 @@ button {
 	cursor: pointer;
 	font-family: var(--font-family);
 	font-size: var(--font-size);
-	transition: background-color var(--transition-speed), transform var(--transition-speed);
+	transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
 }
+button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.35) }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.25) }
 
 button:hover {
 	background-color: var(--button-hover);
@@ -59,6 +61,8 @@ button:active {
 button:disabled {
 	background-color: var(--secondary-text);
 	cursor: not-allowed;
+	opacity: .6;
+	pointer-events: none;
 }
 
 .btn-primary {
