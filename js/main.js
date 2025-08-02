@@ -128,18 +128,22 @@ function setupEventListeners() {
 			console.log('Refresh models clicked - API key present:', !!settings.apiKey);
 			
 			if (settings.apiKey && settings.apiKey.trim()) {
-				showNotification('Refreshing models...', 'info');
-				getAvailableModels().then(models => {
+				showNotification('Validating API key...', 'info');
+				validateApiKey().then(v => {
+					if (!v.valid) {
+						showNotification(v.message || 'Invalid API key', 'error')
+						return []
+					}
+					return getAvailableModels()
+				}).then(models => {
 					console.log('Models refreshed:', models.length);
 					if (models.length > 0) {
 						populateModelSelect(models);
 						showNotification('Models refreshed successfully', 'success');
-					} else {
-						showNotification('No models available. Please check your API key.', 'warning');
 					}
 				}).catch(error => {
 					console.error('Error refreshing models:', error);
-					showNotification('Error refreshing models: ' + error.message, 'error');
+					showNotification('Error refreshing models', 'error');
 				});
 			} else {
 				console.warn('No API key set, cannot refresh models');
@@ -325,11 +329,17 @@ function loadSavedData() {
 	// Load models if API key is available
 	const settings = getSettings();
 	if (settings.apiKey && navigator.onLine) {
-		getAvailableModels().then(models => {
+		validateApiKey().then(v => {
+			if (!v.valid) {
+				showNotification(v.message || 'Invalid API key', 'error')
+				return []
+			}
+			return getAvailableModels()
+		}).then(models => {
 			populateModelSelect(models);
 		}).catch(error => {
 			console.error('Error loading models on page load:', error);
-			showNotification('Error loading models on page load: ' + error.message, 'error');
+			showNotification('Error loading models', 'error');
 		});
 	}
 }
@@ -400,19 +410,23 @@ function saveSettings() {
 		// Save the settings
 		saveSettingsData(settings);
 		
-		// If API key was just set or changed, refresh models
+		// If API key was just set or changed, validate then refresh models
 		if (settings.apiKey && settings.apiKey.trim()) {
-			showNotification('Refreshing models with API key...', 'info');
-			getAvailableModels().then(models => {
-				if (models.length > 0) {
+			showNotification('Validating API key...', 'info');
+			validateApiKey().then(v => {
+				if (!v.valid) {
+					showNotification(v.message || 'Invalid API key', 'error')
+					return []
+				}
+				return getAvailableModels()
+			}).then(models => {
+				if (Array.isArray(models) && models.length > 0) {
 					populateModelSelect(models);
 					showNotification('Settings saved and models refreshed', 'success');
-				} else {
-					showNotification('Settings saved but no models available. Please check your API key.', 'warning');
 				}
 			}).catch(error => {
 				console.error('Error loading models:', error);
-				showNotification('Settings saved but error loading models: ' + error.message, 'warning');
+				showNotification('Error loading models', 'error');
 			});
 		} else {
 			showNotification('Settings saved', 'success');

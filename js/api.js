@@ -123,11 +123,32 @@ async function testAPIConnection() {
 	}
 }
 
+// Quick auth validation using a minimal request
+async function validateApiKey() {
+	const settings = getSettings()
+	if (!settings.apiKey || !settings.apiKey.trim()) return { valid: false, message: 'API key not set' }
+	if (!isOnline()) return { valid: false, message: 'You are offline' }
+	try {
+		const resp = await fetch(API_ENDPOINT, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${settings.apiKey}`,
+			},
+			body: JSON.stringify({ model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free', messages: [{ role: 'user', content: 'ping' }], max_tokens: 1, temperature: 0 }),
+		})
+		if (resp.status === 401 || resp.status === 403) return { valid: false, message: 'Invalid API key. Please check your OpenRouter API key.' }
+		return { valid: true }
+	} catch (e) {
+		return { valid: false, message: e.message }
+	}
+}
+
 // Get available models
 async function getAvailableModels() {
 	const settings = getSettings();
 	
-	if (!settings.apiKey) {
+	if (!settings.apiKey || !settings.apiKey.trim()) {
 		showNotification('API key not set. Please configure in settings.', 'error');
 		return [];
 	}
@@ -138,6 +159,12 @@ async function getAvailableModels() {
 	}
 	
 	try {
+		// Validate key first
+		const validation = await validateApiKey()
+		if (!validation.valid) {
+			showNotification(validation.message || 'Invalid API key', 'error')
+			return []
+		}
 		const response = await fetch('https://openrouter.ai/api/v1/models', {
 			method: 'GET',
 			headers: {
@@ -145,67 +172,46 @@ async function getAvailableModels() {
 			}
 		});
 		
-		// Check if response is OK (status 200-299)
 		if (!response.ok) {
 			let errorMessage = 'Failed to fetch models';
-			
-			// Try to get error details from response
 			try {
 				const errorData = await response.json();
 				errorMessage = errorData.error?.message || `API error: ${response.status} ${response.statusText}`;
 			} catch (e) {
-				// If we can't parse error data, use status text
 				errorMessage = `API error: ${response.status} ${response.statusText}`;
 			}
-			
-			// Handle specific status codes
 			if (response.status === 401 || response.status === 403) {
-				errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
-			} else if (response.status === 429) {
-				errorMessage = 'Rate limit exceeded. Please try again later.';
+				showNotification('Invalid API key. Please check your OpenRouter API key.', 'error');
+				return [];
 			}
-			
+			if (response.status === 429) {
+				showNotification('Rate limit exceeded. Please try again later.', 'warning');
+				return [];
+			}
 			throw new Error(errorMessage);
 		}
 		
 		const data = await response.json();
 		console.log('Available models from API:', data.data?.length || 0);
 		
-		// Check if the response contains an error
 		if (data.error) {
 			let errorMessage = data.error.message || 'API returned an error';
 			if (errorMessage.toLowerCase().includes('auth') || errorMessage.toLowerCase().includes('key')) {
-				errorMessage = 'Invalid API key. Please check your OpenRouter API key.';
+				showNotification('Invalid API key. Please check your OpenRouter API key.', 'error');
+				return [];
 			}
 			throw new Error(errorMessage);
 		}
 		
-		// Return full model objects with proper filtering for free models
 		const models = data.data || [];
-		
-		// Include all models but prioritize free ones
-		const filteredModels = models.filter(model => {
-			const id = model.id?.toLowerCase() || '';
-			const name = model.name?.toLowerCase() || '';
-			const pricing = model.pricing;
-			
-			// Check if model is free (pricing.prompt === "0")
-			const isFree = pricing && pricing.prompt === "0" && pricing.completion === "0";
-			
-			// Include all models but mark free ones
-			return true; // Include all models for now
-		});
-		
-		// Sort models: free ones first, then others
+		const filteredModels = models.filter(model => true);
 		const sortedModels = filteredModels.sort((a, b) => {
 			const aFree = a.pricing && a.pricing.prompt === "0" && a.pricing.completion === "0";
 			const bFree = b.pricing && b.pricing.prompt === "0" && b.pricing.completion === "0";
-			
 			if (aFree && !bFree) return -1;
 			if (!aFree && bFree) return 1;
 			return 0;
 		});
-		
 		return sortedModels;
 			
 	} catch (error) {

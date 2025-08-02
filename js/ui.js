@@ -173,12 +173,18 @@ function loadSettingsContent() {
 	
 	// Load available models and populate select if API key is available
 	if (settings.apiKey && navigator.onLine) {
-		getAvailableModels().then(models => {
-			populateModelSelect(models);
+		validateApiKey().then(v => {
+			if (!v.valid) {
+				showNotification(v.message || 'Invalid API key', 'error')
+				if (model) model.value = settings.model || 'openai/gpt-3.5-turbo'
+				return []
+			}
+			return getAvailableModels()
+		}).then(models => {
+			if (Array.isArray(models) && models.length > 0) populateModelSelect(models)
 		}).catch(error => {
 			console.error('Error loading models:', error);
-			showNotification('Error loading models: ' + error.message, 'error');
-			// Fallback to simple model select
+			showNotification('Error loading models', 'error');
 			if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
 		});
 	} else {
