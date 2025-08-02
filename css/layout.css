@@ -120,4 +120,29 @@ body {
     .mobile-only {
         display: block;
     }
+/* Side panel toggle buttons */
+#panel-toggle, #panel-close {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  padding: 0;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 1.8rem;
+}
+
+#panel-toggle:hover, #panel-close:hover {
+  color: var(--accent-color);
+}
 }
