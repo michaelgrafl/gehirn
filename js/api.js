@@ -8,12 +8,14 @@ async function sendMessageToAPI(message) {
 	const settings = getSettings();
 	
 	if (!settings.apiKey) {
-		showNotification('API key not set. Please configure in settings.', 'error');
+		const status = ensureSettingsStatus && ensureSettingsStatus()
+		if (status) { status.textContent = 'API key not set. Please configure in settings.'; status.className = 'inline-status error' }
 		return null;
 	}
 	
 	if (!isOnline()) {
-		showNotification('You are offline. Please check your connection.', 'error');
+		const status = ensureSettingsStatus && ensureSettingsStatus()
+		if (status) { status.textContent = 'You are offline. Please check your connection.'; status.className = 'inline-status error' }
 		return null;
 	}
 	
@@ -76,7 +78,13 @@ async function sendMessageToAPI(message) {
 		
 	} catch (error) {
 		console.error('API Error:', error);
-		showNotification(`Error: ${error.message}`, 'error');
+		const activity = document.getElementById('activity-log') || (typeof createActivityLog === 'function' ? createActivityLog() : null)
+		if (activity) {
+			const item = document.createElement('div')
+			item.className = 'activity-item error'
+			item.textContent = `Error: ${error.message}`
+			activity.prepend(item)
+		}
 		return null;
 	}
 }
@@ -149,12 +157,14 @@ async function getAvailableModels() {
 	const settings = getSettings();
 	
 	if (!settings.apiKey || !settings.apiKey.trim()) {
-		showNotification('API key not set. Please configure in settings.', 'error');
+		const status = ensureSettingsStatus && ensureSettingsStatus()
+		if (status) { status.textContent = 'API key not set. Please configure in settings.'; status.className = 'inline-status error' }
 		return [];
 	}
 	
 	if (!isOnline()) {
-		showNotification('You are offline. Please check your connection.', 'error');
+		const status = ensureSettingsStatus && ensureSettingsStatus()
+		if (status) { status.textContent = 'You are offline. Please check your connection.'; status.className = 'inline-status error' }
 		return [];
 	}
 	
@@ -181,11 +191,11 @@ async function getAvailableModels() {
 				errorMessage = `API error: ${response.status} ${response.statusText}`;
 			}
 			if (response.status === 401 || response.status === 403) {
-				showNotification('Invalid API key. Please check your OpenRouter API key.', 'error');
+				const status = ensureSettingsStatus && ensureSettingsStatus(); if (status) { status.textContent = 'Invalid API key. Please check your OpenRouter API key.'; status.className = 'inline-status error' }
 				return [];
 			}
 			if (response.status === 429) {
-				showNotification('Rate limit exceeded. Please try again later.', 'warning');
+				const status = ensureSettingsStatus && ensureSettingsStatus(); if (status) { status.textContent = 'Rate limit exceeded. Please try again later.'; status.className = 'inline-status warning' }
 				return [];
 			}
 			throw new Error(errorMessage);
@@ -216,7 +226,7 @@ async function getAvailableModels() {
 			
 	} catch (error) {
 		console.error('Error fetching models:', error);
-		showNotification(`Error: ${error.message}`, 'error');
+		const status = ensureSettingsStatus && ensureSettingsStatus(); if (status) { status.textContent = `Error: ${error.message}`; status.className = 'inline-status error' }
 		return [];
 	}
 }
@@ -298,12 +308,11 @@ async function generateSummary() {
 		const summaryPrompt = `Please provide a concise summary of the following conversation:\n\n${conversationText}`;
 		
 		// Show loading indicator
-		showNotification('Generating summary...', 'info');
-		
+		const activity = document.getElementById('activity-log') || (typeof createActivityLog === 'function' ? createActivityLog() : null)
+		if (activity) { const i=document.createElement('div'); i.className='activity-item info'; i.textContent='Generating summary...'; activity.prepend(i) }
 		const summary = await sendMessageToAPI(summaryPrompt);
-		
 		if (summary) {
-			showNotification('Summary generated', 'success');
+			if (activity) { const i=document.createElement('div'); i.className='activity-item success'; i.textContent='Summary generated'; activity.prepend(i) }
 			return summary;
 		} else {
 			return 'Failed to generate summary.';
@@ -342,12 +351,11 @@ async function extractActionItems() {
 		const actionItemsPrompt = `Extract all action items, tasks, or to-do items from the following conversation. Return them as a numbered list:\n\n${conversationText}`;
 		
 		// Show loading indicator
-		showNotification('Extracting action items...', 'info');
-		
+		const activity = document.getElementById('activity-log') || (typeof createActivityLog === 'function' ? createActivityLog() : null)
+		if (activity) { const i=document.createElement('div'); i.className='activity-item info'; i.textContent='Extracting action items...'; activity.prepend(i) }
 		const actionItemsText = await sendMessageToAPI(actionItemsPrompt);
-		
 		if (actionItemsText) {
-			showNotification('Action items extracted', 'success');
+			if (activity) { const i=document.createElement('div'); i.className='activity-item success'; i.textContent='Action items extracted'; activity.prepend(i) }
 			
 			// Parse the numbered list into an array
 			return actionItemsText
@@ -391,12 +399,11 @@ async function generateInsights() {
 		const insightsPrompt = `Analyze the following conversation and provide key insights, patterns, or observations:\n\n${conversationText}`;
 		
 		// Show loading indicator
-		showNotification('Generating insights...', 'info');
-		
+		const activity = document.getElementById('activity-log') || (typeof createActivityLog === 'function' ? createActivityLog() : null)
+		if (activity) { const i=document.createElement('div'); i.className='activity-item info'; i.textContent='Generating insights...'; activity.prepend(i) }
 		const insightsText = await sendMessageToAPI(insightsPrompt);
-		
 		if (insightsText) {
-			showNotification('Insights generated', 'success');
+			if (activity) { const i=document.createElement('div'); i.className='activity-item success'; i.textContent='Insights generated'; activity.prepend(i) }
 			
 			// Split into paragraphs
 			return insightsText

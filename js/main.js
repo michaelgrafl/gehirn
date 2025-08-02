@@ -128,26 +128,36 @@ function setupEventListeners() {
 			console.log('Refresh models clicked - API key present:', !!settings.apiKey);
 			
 			if (settings.apiKey && settings.apiKey.trim()) {
-				showNotification('Validating API key...', 'info');
+				const status = ensureSettingsStatus()
+				status.textContent = 'Validating API key...'
+				status.className = 'inline-status info'
 				validateApiKey().then(v => {
 					if (!v.valid) {
-						showNotification(v.message || 'Invalid API key', 'error')
+						status.textContent = v.message || 'Invalid API key'
+						status.className = 'inline-status error'
 						return []
 					}
+					status.textContent = 'Refreshing models...'
+					status.className = 'inline-status info'
 					return getAvailableModels()
 				}).then(models => {
 					console.log('Models refreshed:', models.length);
 					if (models.length > 0) {
 						populateModelSelect(models);
-						showNotification('Models refreshed successfully', 'success');
+						status.textContent = 'Models refreshed successfully'
+						status.className = 'inline-status success'
 					}
 				}).catch(error => {
 					console.error('Error refreshing models:', error);
-					showNotification('Error refreshing models', 'error');
+					const status = ensureSettingsStatus()
+					status.textContent = 'Error refreshing models'
+					status.className = 'inline-status error'
 				});
 			} else {
 				console.warn('No API key set, cannot refresh models');
-				showNotification('Please set API key first', 'error');
+				const status = ensureSettingsStatus()
+				status.textContent = 'Please set API key first'
+				status.className = 'inline-status error';
 			}
 		});
 	}
@@ -165,9 +175,17 @@ function setupEventListeners() {
 				a.download = 'mementoai-memory.txt';
 				a.click();
 				URL.revokeObjectURL(url);
-				showNotification('Memory exported successfully', 'success');
+				const activity = document.getElementById('activity-log') || createActivityLog();
+				const item = document.createElement('div');
+				item.className = 'activity-item success';
+				item.textContent = 'Memory exported successfully';
+				activity.prepend(item);
 			} else {
-				showNotification('No memory to export', 'warning');
+				const activity = document.getElementById('activity-log') || createActivityLog();
+				const item = document.createElement('div');
+				item.className = 'activity-item warning';
+				item.textContent = 'No memory to export';
+				activity.prepend(item);
 			}
 		});
 	}
@@ -193,7 +211,11 @@ function setupEventListeners() {
 				reader.onload = (e) => {
 					const content = e.target.result;
 					saveMemoryData(content);
-					showNotification('Memory imported successfully', 'success');
+					const activity = document.getElementById('activity-log') || createActivityLog();
+					const item = document.createElement('div');
+					item.className = 'activity-item success';
+					item.textContent = 'Memory imported successfully';
+					activity.prepend(item);
 				};
 				reader.readAsText(file);
 			}
@@ -207,13 +229,25 @@ function setupEventListeners() {
 			if ('Notification' in window) {
 				Notification.requestPermission().then(permission => {
 					if (permission === 'granted') {
-						showNotification('Notifications enabled', 'success');
+						const activity = document.getElementById('activity-log') || createActivityLog();
+						const item = document.createElement('div');
+						item.className = 'activity-item success';
+						item.textContent = 'Notifications enabled';
+						activity.prepend(item);
 					} else {
-						showNotification('Notifications denied', 'error');
+						const activity = document.getElementById('activity-log') || createActivityLog();
+						const item = document.createElement('div');
+						item.className = 'activity-item error';
+						item.textContent = 'Notifications denied';
+						activity.prepend(item);
 					}
 				});
 			} else {
-				showNotification('Notifications not supported', 'error');
+				const activity = document.getElementById('activity-log') || createActivityLog();
+		const item = document.createElement('div');
+		item.className = 'activity-item error';
+		item.textContent = 'Notifications not supported';
+		activity.prepend(item);
 			}
 		});
 	}
@@ -225,7 +259,11 @@ function setupEventListeners() {
 			const debugInfo = document.getElementById('debug-info');
 			if (debugInfo) {
 				debugInfo.innerHTML = '';
-				showNotification('Debug info cleared', 'success');
+				const activity = document.getElementById('activity-log') || createActivityLog();
+				const item = document.createElement('div');
+				item.className = 'activity-item success';
+				item.textContent = 'Debug info cleared';
+				activity.prepend(item);
 			}
 		});
 	}
@@ -257,10 +295,14 @@ function setupEventListeners() {
 					}
 					populateModelSelect(filteredModels);
 				}).catch(error => {
-					showNotification('Error filtering models: ' + error.message, 'error');
+					const status = ensureSettingsStatus()
+					status.textContent = 'Error filtering models: ' + error.message
+					status.className = 'inline-status error';
 				});
 			} else {
-				showNotification('Please set API key first', 'error');
+				const status = ensureSettingsStatus()
+				status.textContent = 'Please set API key first'
+				status.className = 'inline-status error';
 			}
 		});
 	}
@@ -308,12 +350,20 @@ function handleResize() {
 
 function handleOnline() {
 	// Update UI when coming back online
-	showNotification('You are back online', 'success');
+	const activity = document.getElementById('activity-log') || createActivityLog();
+	const item = document.createElement('div');
+	item.className = 'activity-item success';
+	item.textContent = 'You are back online';
+	activity.prepend(item);
 }
 
 function handleOffline() {
 	// Update UI when going offline
-	showNotification('You are offline. Some features may not be available.', 'warning');
+	const activity = document.getElementById('activity-log') || createActivityLog();
+	const item = document.createElement('div');
+	item.className = 'activity-item warning';
+	item.textContent = 'You are offline. Some features may not be available.';
+	activity.prepend(item);
 }
 
 function loadSavedData() {
@@ -339,7 +389,9 @@ function loadSavedData() {
 			populateModelSelect(models);
 		}).catch(error => {
 			console.error('Error loading models on page load:', error);
-			showNotification('Error loading models', 'error');
+			const status = ensureSettingsStatus()
+			status.textContent = 'Error loading models'
+			status.className = 'inline-status error';
 		});
 	}
 }
@@ -348,7 +400,11 @@ function clearConversation() {
 	if (confirm('Are you sure you want to clear the conversation?')) {
 		clearConversationData();
 		renderMessages([]);
-		showNotification('Conversation cleared', 'success');
+		const activity = document.getElementById('activity-log') || createActivityLog();
+		const item = document.createElement('div');
+		item.className = 'activity-item success';
+		item.textContent = 'Conversation cleared';
+		activity.prepend(item);
 	}
 }
 
@@ -387,7 +443,8 @@ function saveMemory() {
 	if (memoryContent) {
 		saveMemoryData(memoryContent.value);
 		closeMemoryDialog();
-		showNotification('Memory saved', 'success');
+		const status = document.getElementById('memory-status') || (function(){ const el = document.createElement('div'); el.id='memory-status'; el.className='inline-status success'; const dialog=document.getElementById('memory-dialog')||document.body; dialog.appendChild(el); return el; })();
+		status.textContent = 'Memory saved';
 	}
 }
 
@@ -412,21 +469,29 @@ function saveSettings() {
 		
 		// If API key was just set or changed, validate then refresh models
 		if (settings.apiKey && settings.apiKey.trim()) {
-			showNotification('Validating API key...', 'info');
+			const status = ensureSettingsStatus()
+			status.textContent = 'Validating API key...'
+			status.className = 'inline-status info'
 			validateApiKey().then(v => {
 				if (!v.valid) {
-					showNotification(v.message || 'Invalid API key', 'error')
+					status.textContent = v.message || 'Invalid API key'
+					status.className = 'inline-status error'
 					return []
 				}
+				status.textContent = 'Loading models...'
+				status.className = 'inline-status info'
 				return getAvailableModels()
 			}).then(models => {
 				if (Array.isArray(models) && models.length > 0) {
 					populateModelSelect(models);
-					showNotification('Settings saved and models refreshed', 'success');
+					status.textContent = 'Settings saved and models refreshed'
+					status.className = 'inline-status success'
 				}
 			}).catch(error => {
 				console.error('Error loading models:', error);
-				showNotification('Error loading models', 'error');
+				const status = ensureSettingsStatus()
+				status.textContent = 'Error loading models'
+				status.className = 'inline-status error'
 			});
 		} else {
 			showNotification('Settings saved', 'success');
@@ -443,13 +508,21 @@ function testNotification() {
 			if (permission === 'granted') {
 				showTestNotification();
 			} else {
-				showNotification('Notification permission denied', 'error');
+				const activity = document.getElementById('activity-log') || createActivityLog();
+		const item = document.createElement('div');
+		item.className = 'activity-item error';
+		item.textContent = 'Notification permission denied';
+		activity.prepend(item);
 			}
 		});
 	} else if ('Notification' in window && Notification.permission === 'granted') {
 		showTestNotification();
 	} else {
-		showNotification('Notifications not supported', 'error');
+		const activity = document.getElementById('activity-log') || createActivityLog();
+				const item = document.createElement('div');
+				item.className = 'activity-item error';
+				item.textContent = 'Notifications not supported';
+				activity.prepend(item);
 	}
 }
 

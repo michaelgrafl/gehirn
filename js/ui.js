@@ -116,11 +116,35 @@ function renderMarkdown(content) {
 function copyToClipboard(text) {
 	navigator.clipboard.writeText(text)
 		.then(() => {
-			showNotification('Copied to clipboard', 'success');
+			const footer = document.querySelector('footer');
+			if (footer) {
+				let status = document.getElementById('footer-status');
+				if (!status) {
+					status = document.createElement('div');
+					status.id = 'footer-status';
+					status.setAttribute('role', 'status');
+					status.className = 'inline-status success';
+					footer.appendChild(status);
+				}
+				status.className = 'inline-status success';
+				status.textContent = 'Copied to clipboard';
+			}
 		})
 		.catch(err => {
 			console.error('Failed to copy: ', err);
-			showNotification('Failed to copy', 'error');
+			const footer = document.querySelector('footer');
+			if (footer) {
+				let status = document.getElementById('footer-status');
+				if (!status) {
+					status = document.createElement('div');
+					status.id = 'footer-status';
+					status.setAttribute('role', 'alert');
+					status.className = 'inline-status error';
+					footer.appendChild(status);
+				}
+				status.className = 'inline-status error';
+				status.textContent = 'Failed to copy';
+			}
 		});
 }
 
@@ -134,24 +158,13 @@ function addToMemory(content) {
 
 // Show notification
 function showNotification(message, type = 'info') {
-	const notification = document.createElement('div');
-	notification.className = `notification ${type}`;
-	notification.textContent = message;
-	
-	document.body.appendChild(notification);
-	
-	// Animate in
-	setTimeout(() => {
-		notification.classList.add('show');
-	}, 10);
-	
-	// Remove after delay
-	setTimeout(() => {
-		notification.classList.remove('show');
-		setTimeout(() => {
-			document.body.removeChild(notification);
-		}, 300);
-	}, 3000);
+	const activity = document.getElementById('activity-log') || createActivityLog();
+	const item = document.createElement('div');
+	item.className = `activity-item ${type}`;
+	item.textContent = message;
+	activity.prepend(item);
+	let status = document.getElementById('settings-status') || ensureSettingsStatus()
+	if (status) { status.textContent = message; status.className = `inline-status ${type}` }
 }
 
 // Load memory content into dialog
@@ -173,21 +186,33 @@ function loadSettingsContent() {
 	
 	// Load available models and populate select if API key is available
 	if (settings.apiKey && navigator.onLine) {
-		validateApiKey().then(v => {
-			if (!v.valid) {
-				showNotification(v.message || 'Invalid API key', 'error')
-				if (model) model.value = settings.model || 'openai/gpt-3.5-turbo'
-				return []
-			}
-			return getAvailableModels()
-		}).then(models => {
-			if (Array.isArray(models) && models.length > 0) populateModelSelect(models)
-		}).catch(error => {
-			console.error('Error loading models:', error);
-			showNotification('Error loading models', 'error');
-			if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
-		});
-	} else {
+	const status = ensureSettingsStatus()
+	status.textContent = 'Validating API key...'
+	status.className = 'inline-status info'
+	validateApiKey().then(v => {
+	if (!v.valid) {
+	 status.textContent = v.message || 'Invalid API key'
+	 status.className = 'inline-status error'
+	  if (model) model.value = settings.model || 'openai/gpt-3.5-turbo'
+	 return []
+	 }
+	status.textContent = 'Loading models...'
+	status.className = 'inline-status info'
+	return getAvailableModels()
+	}).then(models => {
+	  if (Array.isArray(models) && models.length > 0) {
+					populateModelSelect(models)
+					status.textContent = `${models.length} models loaded`
+					status.className = 'inline-status success'
+				}
+			}).catch(error => {
+				console.error('Error loading models:', error);
+				const status = ensureSettingsStatus()
+				status.textContent = 'Error loading models'
+				status.className = 'inline-status error'
+				if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
+			});
+		} else {
 		// Fallback to simple model select
 		if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
 	}
@@ -332,6 +357,31 @@ function hideImportDialog() {
 	if (dialog) {
 		dialog.style.display = 'none';
 	}
+}
+
+function createActivityLog() {
+	let footer = document.querySelector('footer')
+	if (!footer) footer = document.body
+	let pane = document.getElementById('activity-log')
+	if (!pane) {
+		pane = document.createElement('div')
+		pane.id = 'activity-log'
+		pane.className = 'activity-log'
+		footer.appendChild(pane)
+	}
+	return pane
+}
+
+function ensureSettingsStatus() {
+	const panel = document.getElementById('settings-panel')
+	let status = document.getElementById('settings-status')
+	if (!status && panel) {
+		status = document.createElement('div')
+		status.id = 'settings-status'
+		status.className = 'inline-status'
+		panel.insertBefore(status, panel.firstChild)
+	}
+	return status
 }
 
 // Handle import data
