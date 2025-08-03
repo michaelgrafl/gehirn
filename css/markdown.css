@@ -1,6 +1,7 @@
-/* Markdown Content Styles */
+/* Markdown Styles */
 .markdown {
-	line-height: var(--line-height);
+  line-height: 1.6;
+  color: var(--text-primary);
 }
 
 .markdown h1,
@@ -9,130 +10,129 @@
 .markdown h4,
 .markdown h5,
 .markdown h6 {
-	margin-top: calc(var(--margin) * 1.5);
-	margin-bottom: var(--margin);
-	color: var(--text-color);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .markdown h1 {
-	font-size: 2em;
-	border-bottom: 1px solid var(--border-color);
-	padding-bottom: calc(var(--spacing-unit) / 2);
+  font-size: 2em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
 }
 
 .markdown h2 {
-	font-size: 1.5em;
-	border-bottom: 1px solid var(--border-color);
-	padding-bottom: calc(var(--spacing-unit) / 2);
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.3em;
 }
 
 .markdown h3 {
-	font-size: 1.25em;
+  font-size: 1.25em;
 }
 
 .markdown p {
-	margin-bottom: var(--margin);
+  margin-bottom: 1em;
+}
+
+.markdown a {
+  color: #6ea8fe;
+  text-decoration: none;
+}
+
+.markdown a:hover {
+  text-decoration: underline;
+}
+
+.markdown strong {
+  font-weight: 600;
+}
+
+.markdown em {
+  font-style: italic;
 }
 
 .markdown ul,
 .markdown ol {
-	margin-bottom: var(--margin);
-	padding-left: calc(var(--spacing-unit) * 2);
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.markdown ul {
+  list-style-type: disc;
+}
+
+.markdown ol {
+  list-style-type: decimal;
 }
 
 .markdown li {
-	margin-bottom: calc(var(--spacing-unit) / 2);
+  margin-bottom: 0.25em;
 }
 
-.markdown a {
-	color: var(--accent-color);
-	text-decoration: none;
+.markdown li > ul,
+.markdown li > ol {
+  margin-top: 0.25em;
+  margin-bottom: 0;
 }
 
-.markdown a:hover {
-	text-decoration: underline;
+.markdown code {
+  background-color: var(--bg-secondary);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
 }
-
-.markdown code { background-color: #0b1220; padding: 2px 6px; border-radius: 6px }
 
 .markdown pre {
-	background-color: #0b1220;
-	padding: 12px;
-	border-radius: 10px;
-	overflow-x: auto;
-	margin-bottom: var(--margin);
-	border: 1px solid #1b2740;
+  margin-bottom: 1em;
+  padding: 1em;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  overflow-x: auto;
 }
 
-.markdown pre code { background-color: transparent; padding: 0 }
+.markdown pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.9em;
+}
 
 .markdown blockquote {
-	border-left: 4px solid var(--accent-color);
-	padding-left: var(--spacing-unit);
-	margin-bottom: var(--margin);
-	color: var(--secondary-text);
-}
-
-.markdown table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-bottom: var(--margin);
-}
-
-.markdown th,
-.markdown td {
-	border: 1px solid var(--border-color);
-	padding: var(--spacing-unit);
-	text-align: left;
-}
-
-.markdown th {
-	background-color: rgba(52, 152, 219, 0.1);
-	font-weight: bold;
-}
-
-.markdown tr:nth-child(even) {
-	background-color: rgba(0, 0, 0, 0.05);
-}
-
-.markdown img {
-	max-width: 100%;
-	height: auto;
-	border-radius: var(--border-radius);
-	margin-bottom: var(--margin);
+  margin: 0 0 1em;
+  padding: 0 1em;
+  border-left: 4px solid var(--border-color);
+  color: var(--text-secondary);
 }
 
 .markdown hr {
-	border: none;
-	border-top: 1px solid var(--border-color);
-	margin: calc(var(--margin) * 2) 0;
+  height: 1px;
+  background-color: var(--border-color);
+  border: none;
+  margin: 2em 0;
 }
 
-.markdown .task-list-item {
-	list-style-type: none;
-	margin-left: calc(var(--spacing-unit) * -1.5);
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
 }
 
-.markdown .task-list-item input {
-	margin-right: calc(var(--spacing-unit) / 2);
+.markdown table th,
+.markdown table td {
+  padding: 0.5em;
+  border: 1px solid var(--border-color);
 }
 
-@media (max-width: 600px) {
-	.markdown h1 {
-		font-size: 1.5em;
-	}
-	
-	.markdown h2 {
-		font-size: 1.25em;
-	}
-	
-	.markdown h3 {
-		font-size: 1.1em;
-	}
-	
-	.markdown table {
-		display: block;
-		overflow-x: auto;
-		white-space: nowrap;
-	}
+.markdown table th {
+  background-color: var(--bg-secondary);
+  font-weight: 600;
+}
+
+.markdown img {
+  max-width: 100%;
+  height: auto;
 }

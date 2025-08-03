@@ -7,6 +7,7 @@ label {
 	display: block;
 	margin-bottom: calc(var(--spacing-unit) / 2);
 	font-weight: 500;
+	color: var(--text-primary);
 }
 
 input[type="text"],
@@ -17,13 +18,13 @@ textarea,
 select {
 	width: 100%;
 	padding: var(--spacing-unit);
-	border: 1px solid var(--input-border);
+	border: 1px solid var(--border-color);
 	border-radius: var(--border-radius);
 	font-family: var(--font-family);
 	font-size: var(--font-size);
 	transition: border-color var(--transition-speed);
-	background-color: var(--container-bg);
-	color: var(--text-color);
+	background-color: var(--bg-input);
+	color: var(--text-primary);
 }
 
 input[type="text"]:focus,
@@ -33,12 +34,12 @@ input[type="number"]:focus,
 textarea:focus,
 select:focus {
 	outline: none;
-	border-color: var(--input-focus);
+	border-color: var(--accent-color);
 }
 
 button {
 	background-color: var(--accent-color);
-	color: white;
+	color: var(--text-primary);
 	border: none;
 	padding: var(--spacing-unit) calc(var(--spacing-unit) * 2);
 	border-radius: var(--border-radius);
@@ -49,8 +50,18 @@ button {
 	transition: all var(--transition-speed);
 	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-button:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.35) }
-input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,.25) }
+
+button:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(59,130,246,.35);
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+}
 
 button:hover {
 	background-color: var(--hover-color);
@@ -63,7 +74,7 @@ button:active {
 }
 
 button:disabled {
-	background-color: var(--secondary-text);
+	background-color: var(--text-secondary);
 	cursor: not-allowed;
 	opacity: .6;
 	pointer-events: none;
@@ -79,13 +90,12 @@ button:disabled {
 
 .btn-secondary {
 	background-color: transparent;
-	color: var(--accent-color);
-	border: 2px solid var(--accent-color);
+	color: var(--text-primary);
+	border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-	background-color: var(--accent-color);
-	color: white;
+	background-color: var(--bg-secondary);
 }
 
 .btn-danger {
@@ -98,7 +108,7 @@ button:disabled {
 
 .btn-edit {
 	background-color: var(--edit-color);
-	color: var(--text-color);
+	color: var(--text-primary);
 }
 
 .btn-edit:hover {
@@ -143,4 +153,22 @@ button:disabled {
 
 .radio-group input[type="radio"] {
 	margin-right: var(--spacing-unit);
+}
+
+/* Special styling for the image button in the chat input */
+.image-button {
+	background: transparent;
+	border: none;
+	color: var(--text-secondary);
+	padding: 6px;
+	border-radius: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.image-button:hover {
+	background-color: var(--bg-secondary);
+	color: var(--text-primary);
 }

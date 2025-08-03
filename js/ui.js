@@ -9,10 +9,16 @@ function renderMessages(messages) {
 	messagesContainer.innerHTML = '';
 	
 	if (!messages || messages.length === 0) {
-		const empty = document.createElement('div')
-		empty.className = 'message assistant'
-		empty.innerHTML = '<div class="message-header"><span class="message-role">MementoAI</span></div><div class="message-content markdown"><p>Welcome! Paste your OpenRouter key in Settings, pick a model, then start chatting. Tips:<br>• Shift+Enter = newline<br>• Use Remember on AI replies to store notes</p></div>'
-		messagesContainer.appendChild(empty)
+		const empty = document.createElement('div');
+		empty.className = 'message-bubble message-welcome';
+		empty.innerHTML = `
+			<div class="message-avatar" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')"></div>
+			<div class="message-content-container">
+				<p class="message-sender">MementoAI</p>
+				<p class="message-text ai">Welcome! Paste your OpenRouter key in Settings, pick a model, then start chatting. Tips:<br>• Shift+Enter = newline<br>• Use Remember on AI replies to store notes</p>
+			</div>
+		`;
+		messagesContainer.appendChild(empty);
 	} else {
 		// Add messages to container
 		messages.forEach(message => {
@@ -28,27 +34,36 @@ function renderMessages(messages) {
 // Create a message element
 function createMessageElement(message) {
 	const messageDiv = document.createElement('div');
-	messageDiv.className = `message ${message.role}`;
+	messageDiv.className = 'message-bubble';
 	
-	// Add message header
-	const messageHeader = document.createElement('div');
-	messageHeader.className = 'message-header';
+	// Create avatar
+	const avatarDiv = document.createElement('div');
+	avatarDiv.className = 'message-avatar';
 	
-	const roleElement = document.createElement('span');
-	roleElement.className = 'message-role';
-	roleElement.textContent = message.role === 'user' ? 'You' : 'MementoAI';
-	messageHeader.appendChild(roleElement);
+	// Set avatar based on role
+	if (message.role === 'user') {
+		// User avatar - using a default user icon
+		avatarDiv.style.backgroundImage = "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2235%22 r=%2215%22 fill=%22%23a0abbb%22/><path d=%22M50,55 C35,55 25,65 25,80 L75,80 C75,65 65,55 50,55 Z%22 fill=%22%23a0abbb%22/></svg>')";
+	} else {
+		// AI avatar - using the brain icon
+		avatarDiv.style.backgroundImage = "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')";
+	}
 	
-	const timestampElement = document.createElement('span');
-	timestampElement.className = 'message-timestamp';
-	timestampElement.textContent = formatTimestamp(message.timestamp);
-	messageHeader.appendChild(timestampElement);
+	messageDiv.appendChild(avatarDiv);
 	
-	messageDiv.appendChild(messageHeader);
+	// Create content container
+	const contentContainer = document.createElement('div');
+	contentContainer.className = 'message-content-container';
+	
+	// Add sender name
+	const senderElement = document.createElement('p');
+	senderElement.className = 'message-sender';
+	senderElement.textContent = message.role === 'user' ? 'You' : 'MementoAI';
+	contentContainer.appendChild(senderElement);
 	
 	// Add message content
-	const messageContent = document.createElement('div');
-	messageContent.className = 'message-content markdown';
+	const messageContent = document.createElement('p');
+	messageContent.className = `message-text ${message.role === 'user' ? 'user' : 'ai'}`;
 	
 	if (message.role === 'user') {
 		messageContent.textContent = message.content;
@@ -57,22 +72,26 @@ function createMessageElement(message) {
 		messageContent.innerHTML = renderMarkdown(message.content);
 	}
 	
-	messageDiv.appendChild(messageContent);
+	contentContainer.appendChild(messageContent);
+	messageDiv.appendChild(contentContainer);
 	
 	// Add message actions for AI messages
 	if (message.role === 'assistant') {
 		const messageActions = document.createElement('div');
 		messageActions.className = 'message-actions';
+		messageActions.style.marginLeft = '52px'; // Align with message text
 		
 		const copyButton = document.createElement('button');
 		copyButton.className = 'message-action-btn';
 		copyButton.innerHTML = '📋 Copy';
+		copyButton.setAttribute('aria-label', 'Copy message to clipboard');
 		copyButton.addEventListener('click', () => copyToClipboard(message.content));
 		messageActions.appendChild(copyButton);
 		
 		const rememberButton = document.createElement('button');
 		rememberButton.className = 'message-action-btn';
 		rememberButton.innerHTML = '🧠 Remember';
+		rememberButton.setAttribute('aria-label', 'Add message to memory');
 		rememberButton.addEventListener('click', () => addToMemory(message.content));
 		messageActions.appendChild(rememberButton);
 		
@@ -135,6 +154,9 @@ function copyToClipboard(text) {
 				}
 				status.className = 'inline-status success';
 				status.textContent = 'Copied to clipboard';
+				
+				// Announce to screen readers
+				status.setAttribute('aria-live', 'polite');
 			}
 		})
 		.catch(err => {
@@ -151,6 +173,9 @@ function copyToClipboard(text) {
 				}
 				status.className = 'inline-status error';
 				status.textContent = 'Failed to copy';
+				
+				// Announce to screen readers
+				status.setAttribute('aria-live', 'assertive');
 			}
 		});
 }
@@ -169,9 +194,15 @@ function showNotification(message, type = 'info') {
 	const item = document.createElement('div');
 	item.className = `activity-item ${type}`;
 	item.textContent = message;
+	item.setAttribute('role', type === 'error' ? 'alert' : 'status');
+	item.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
 	activity.prepend(item);
-	let status = document.getElementById('settings-status') || ensureSettingsStatus()
-	if (status) { status.textContent = message; status.className = `inline-status ${type}` }
+	let status = document.getElementById('settings-status') || ensureSettingsStatus();
+	if (status) { 
+		status.textContent = message; 
+		status.className = `inline-status ${type}`;
+		status.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+	}
 }
 
 // Load memory content into dialog
@@ -187,6 +218,7 @@ function showModal(modalId) {
 	const modal = document.getElementById(modalId);
 	if (modal) {
 		modal.classList.add('active');
+		modal.setAttribute('aria-hidden', 'false');
 		document.body.style.overflow = 'hidden';
 		// Focus first focusable element in modal
 		const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
@@ -199,10 +231,14 @@ function hideModal(modalId) {
 	const modal = document.getElementById(modalId);
 	if (modal) {
 		modal.classList.remove('active');
+		modal.setAttribute('aria-hidden', 'true');
 		document.body.style.overflow = '';
 		// Return focus to settings button
 		const settingsBtn = document.getElementById('settings-toggle');
-		if (settingsBtn) settingsBtn.focus();
+		if (settingsBtn) {
+			settingsBtn.focus();
+			settingsBtn.setAttribute('aria-expanded', 'false');
+		}
 	}
 }
 
@@ -217,33 +253,38 @@ function loadSettingsContent() {
 	
 	// Load available models and populate select if API key is available
 	if (settings.apiKey && navigator.onLine) {
-	const status = ensureSettingsStatus()
-	status.textContent = 'Validating API key...'
-	status.className = 'inline-status info'
-	validateApiKey().then(v => {
-	if (!v.valid) {
-	 status.textContent = v.message || 'Invalid API key'
-	 status.className = 'inline-status error'
-	  if (model) model.value = settings.model || 'openai/gpt-3.5-turbo'
-	 return []
-	 }
-	status.textContent = 'Loading models...'
-	status.className = 'inline-status info'
-	return getAvailableModels()
-	}).then(models => {
-	  if (Array.isArray(models) && models.length > 0) {
-					populateModelSelect(models)
-					status.textContent = `${models.length} models loaded`
-					status.className = 'inline-status success'
-				}
-			}).catch(error => {
-				console.error('Error loading models:', error);
-				const status = ensureSettingsStatus()
-				status.textContent = 'Error loading models'
-				status.className = 'inline-status error'
+		const status = ensureSettingsStatus();
+		status.textContent = 'Validating API key...';
+		status.className = 'inline-status info';
+		status.setAttribute('aria-live', 'polite');
+		validateApiKey().then(v => {
+			if (!v.valid) {
+				status.textContent = v.message || 'Invalid API key';
+				status.className = 'inline-status error';
+				status.setAttribute('aria-live', 'assertive');
 				if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
-			});
-		} else {
+				return [];
+			}
+			status.textContent = 'Loading models...';
+			status.className = 'inline-status info';
+			status.setAttribute('aria-live', 'polite');
+			return getAvailableModels();
+		}).then(models => {
+			if (Array.isArray(models) && models.length > 0) {
+				populateModelSelect(models);
+				status.textContent = `${models.length} models loaded`;
+				status.className = 'inline-status success';
+				status.setAttribute('aria-live', 'polite');
+			}
+		}).catch(error => {
+			console.error('Error loading models:', error);
+			const status = ensureSettingsStatus();
+			status.textContent = 'Error loading models';
+			status.className = 'inline-status error';
+			status.setAttribute('aria-live', 'assertive');
+			if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
+		});
+	} else {
 		// Fallback to simple model select
 		if (model) model.value = settings.model || 'openai/gpt-3.5-turbo';
 	}
@@ -259,24 +300,32 @@ function showTypingIndicator() {
 	
 	const typingDiv = document.createElement('div');
 	typingDiv.id = 'typing-indicator';
-	typingDiv.className = 'message assistant';
+	typingDiv.className = 'message-bubble';
 	
-	const messageHeader = document.createElement('div');
-	messageHeader.className = 'message-header';
+	// Create AI avatar
+	const avatarDiv = document.createElement('div');
+	avatarDiv.className = 'message-avatar';
+	avatarDiv.style.backgroundImage = "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')";
+	typingDiv.appendChild(avatarDiv);
 	
-	const roleElement = document.createElement('span');
-	roleElement.className = 'message-role';
-	roleElement.textContent = 'MementoAI';
-	messageHeader.appendChild(roleElement);
+	// Create content container
+	const contentContainer = document.createElement('div');
+	contentContainer.className = 'message-content-container';
 	
-	typingDiv.appendChild(messageHeader);
+	// Add sender name
+	const senderElement = document.createElement('p');
+	senderElement.className = 'message-sender';
+	senderElement.textContent = 'MementoAI';
+	contentContainer.appendChild(senderElement);
 	
-	const messageContent = document.createElement('div');
-	messageContent.className = 'message-content';
+	// Add typing indicator
+	const messageContent = document.createElement('p');
+	messageContent.className = 'message-text ai';
 	messageContent.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+	messageContent.setAttribute('aria-label', 'MementoAI is typing');
+	contentContainer.appendChild(messageContent);
 	
-	typingDiv.appendChild(messageContent);
-	
+	typingDiv.appendChild(contentContainer);
 	messagesContainer.appendChild(typingDiv);
 	messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
@@ -295,6 +344,7 @@ function updateOnlineStatusUI(isOnline) {
 	if (statusElement) {
 		statusElement.textContent = isOnline ? 'Online' : 'Offline';
 		statusElement.className = isOnline ? 'online' : 'offline';
+		statusElement.setAttribute('aria-live', 'polite');
 	}
 }
 
@@ -309,6 +359,7 @@ function updateCharacterCount() {
 		
 		if (count > 2000) {
 			counter.classList.add('over-limit');
+			counter.setAttribute('aria-live', 'polite');
 		} else {
 			counter.classList.remove('over-limit');
 		}
@@ -330,6 +381,7 @@ function toggleDarkMode() {
 	const darkModeToggle = document.getElementById('dark-mode-toggle');
 	if (darkModeToggle) {
 		darkModeToggle.checked = isDarkMode;
+		darkModeToggle.setAttribute('aria-pressed', isDarkMode);
 	}
 }
 
@@ -343,6 +395,7 @@ function loadDarkModePreference() {
 			const darkModeToggle = document.getElementById('dark-mode-toggle');
 			if (darkModeToggle) {
 				darkModeToggle.checked = true;
+				darkModeToggle.setAttribute('aria-pressed', 'true');
 			}
 		}
 	} catch (error) {
@@ -359,6 +412,7 @@ function showExportDialog() {
 			exportData.value = exportState();
 		}
 		dialog.style.display = 'block';
+		dialog.setAttribute('aria-hidden', 'false');
 	}
 }
 
@@ -367,6 +421,7 @@ function hideExportDialog() {
 	const dialog = document.getElementById('export-dialog');
 	if (dialog) {
 		dialog.style.display = 'none';
+		dialog.setAttribute('aria-hidden', 'true');
 	}
 }
 
@@ -379,6 +434,7 @@ function showImportDialog() {
 			importData.value = '';
 		}
 		dialog.style.display = 'block';
+		dialog.setAttribute('aria-hidden', 'false');
 	}
 }
 
@@ -387,65 +443,77 @@ function hideImportDialog() {
 	const dialog = document.getElementById('import-dialog');
 	if (dialog) {
 		dialog.style.display = 'none';
+		dialog.setAttribute('aria-hidden', 'true');
 	}
 }
 
 function createActivityLog() {
-	let footer = document.querySelector('footer')
-	if (!footer) footer = document.body
-	let pane = document.getElementById('activity-log')
+	let footer = document.querySelector('footer');
+	if (!footer) footer = document.body;
+	let pane = document.getElementById('activity-log');
 	if (!pane) {
-		pane = document.createElement('div')
-		pane.id = 'activity-log'
-		pane.className = 'activity-log'
-		footer.appendChild(pane)
+		pane = document.createElement('div');
+		pane.id = 'activity-log';
+		pane.className = 'activity-log';
+		pane.setAttribute('aria-label', 'Activity log');
+		pane.setAttribute('role', 'log');
+		footer.appendChild(pane);
 	}
-	return pane
+	return pane;
 }
 
 function ensureSettingsStatus() {
-	const panel = document.getElementById('settings-panel')
-	let status = document.getElementById('settings-status')
+	const panel = document.getElementById('settings-panel');
+	let status = document.getElementById('settings-status');
 	if (!status && panel) {
-		status = document.createElement('div')
-		status.id = 'settings-status'
-		status.className = 'inline-status'
-		panel.insertBefore(status, panel.firstChild)
+		status = document.createElement('div');
+		status.id = 'settings-status';
+		status.className = 'inline-status';
+		status.setAttribute('role', 'status');
+		status.setAttribute('aria-live', 'polite');
+		panel.insertBefore(status, panel.firstChild);
 	}
-	return status
+	return status;
 }
+
 // Initialize modal functionality
 function initModal() {
-  const mobileSettingsToggle = document.getElementById('mobile-settings-toggle');
-  const desktopSettingsToggle = document.getElementById('desktop-settings-toggle');
-  const modalClose = document.getElementById('modal-close');
-  const modalOverlay = document.getElementById('modal-overlay');
-
-  if (mobileSettingsToggle) {
-    mobileSettingsToggle.addEventListener('click', () => showModal('settings-modal'));
-  }
-  
-  if (desktopSettingsToggle) {
-    desktopSettingsToggle.addEventListener('click', () => showModal('settings-modal'));
-  }
-
-  if (modalClose) {
-    modalClose.addEventListener('click', () => hideModal('settings-modal'));
-  }
-
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', () => hideModal('settings-modal'));
-  }
+	const settingsToggle = document.getElementById('settings-toggle');
+	const modalClose = document.getElementById('modal-close');
+	const modalOverlay = document.getElementById('modal-overlay');
+	
+	if (settingsToggle) {
+		settingsToggle.addEventListener('click', () => {
+			showModal('settings-modal');
+			settingsToggle.setAttribute('aria-expanded', 'true');
+		});
+	}
+	
+	if (modalClose) {
+		modalClose.addEventListener('click', () => hideModal('settings-modal'));
+	}
+	
+	if (modalOverlay) {
+		modalOverlay.addEventListener('click', () => hideModal('settings-modal'));
+	}
+	
+	// Close modal with Escape key
+	document.addEventListener('keydown', (event) => {
+		const modal = document.getElementById('settings-modal');
+		if (event.key === 'Escape' && modal && modal.classList.contains('active')) {
+			hideModal('settings-modal');
+		}
+	});
 }
 
 // Update existing settings close button to use modal close
 document.addEventListener('DOMContentLoaded', () => {
-  initModal();
-  
-  const closeSettings = document.getElementById('close-settings');
-  if (closeSettings) {
-    closeSettings.addEventListener('click', () => hideModal('settings-modal'));
-  }
+	initModal();
+	
+	const closeSettings = document.getElementById('close-settings');
+	if (closeSettings) {
+		closeSettings.addEventListener('click', () => hideModal('settings-modal'));
+	}
 });
 
 // Handle import data
