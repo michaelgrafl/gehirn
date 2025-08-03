@@ -80,7 +80,8 @@ function createMessageElement(message) {
     messageContent.textContent = message.content;
   } else {
     // For AI messages, render markdown
-    messageContent.innerHTML = renderMarkdown(message.content);
+    // Wrap content in a markdown container with Tailwind spacing classes for proper styling
+    messageContent.innerHTML = '<div class="markdown space-y-5">' + renderMarkdown(message.content) + '</div>';
   }
 
   contentContainer.appendChild(messageContent);
@@ -103,35 +104,47 @@ function formatTimestamp(timestamp) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-// Render markdown content
+// Render markdown content using Marked library
 function renderMarkdown(content) {
-  // Simple markdown renderer
-  let html = content
-    // Headers
-    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
-    // Bold
-    .replace(/\*\*(.*)\*\*/gim, "<strong>$1</strong>")
-    // Italic
-    .replace(/\*(.*)\*/gim, "<em>$1</em>")
-    // Code blocks
-    .replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>")
-    // Inline code
-    .replace(/`([^`]*)`/g, "<code>$1</code>")
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // Unordered lists
-    .replace(/^(.*)$/gm, (match) => {
-      if (match.trim().startsWith("- ")) {
-        return "<li>" + match.trim().substring(2) + "</li>";
-      }
-      return match;
-    })
-    // Process lists
-    .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+  // Input validation
+  if (typeof content !== 'string') {
+    console.warn('renderMarkdown: Invalid content type, expected string');
+    return '';
+  }
 
-  return html;
+  try {
+    // Configure Marked options for proper rendering
+    marked.setOptions({
+      // Enable GitHub flavored markdown
+      gfm: true,
+      // Enable tables
+      tables: true,
+      // Enable line breaks
+      breaks: false,
+      // Use smarter list behavior
+      smartLists: true,
+      // Use smarter punctuation
+      smartypants: false, // Disable to prevent UTF-8 character issues
+      // Custom renderer for better control
+      renderer: new marked.Renderer()
+    });
+
+    // Render markdown to HTML
+    const html = marked.parse(content);
+    
+    return html;
+  } catch (error) {
+    console.error('Error rendering markdown:', error);
+    // Return escaped content as plain text as fallback
+    return escapeHtml(content);
+  }
+}
+
+// Helper function to escape HTML entities
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Copy text to clipboard
