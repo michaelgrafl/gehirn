@@ -34,14 +34,16 @@ export function renderMessages(messages) {
 // Create a message element
 function createMessageElement(message) {
   const messageDiv = document.createElement("div");
-  messageDiv.className = message.role === "user" 
-    ? "flex items-end gap-3 p-4 justify-end" 
-    : "flex items-end gap-3 p-4";
+  messageDiv.className =
+    message.role === "user"
+      ? "flex items-end gap-3 p-4 justify-end"
+      : "flex items-end gap-3 p-4";
 
   // Create avatar
   const avatarDiv = document.createElement("div");
-  avatarDiv.className = "bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0";
-  
+  avatarDiv.className =
+    "bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0";
+
   // Set avatar based on role
   if (message.role === "user") {
     avatarDiv.style.backgroundImage =
@@ -53,23 +55,26 @@ function createMessageElement(message) {
 
   // Create content container
   const contentContainer = document.createElement("div");
-  contentContainer.className = message.role === "user" 
-    ? "flex flex-1 flex-col gap-1 items-end" 
-    : "flex flex-1 flex-col gap-1 items-start";
+  contentContainer.className =
+    message.role === "user"
+      ? "flex flex-1 flex-col gap-1 items-end"
+      : "flex flex-1 flex-col gap-1 items-start";
 
   // Add sender name
   const senderElement = document.createElement("p");
-  senderElement.className = message.role === "user"
-    ? "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px] text-right"
-    : "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px]";
+  senderElement.className =
+    message.role === "user"
+      ? "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px] text-right"
+      : "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px]";
   senderElement.textContent = message.role === "user" ? "User" : "AI Assistant";
   contentContainer.appendChild(senderElement);
 
   // Add message content
   const messageContent = document.createElement("p");
-  messageContent.className = message.role === "user"
-    ? "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#172538] text-white whitespace-normal"
-    : "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#2c343f] text-white whitespace-normal";
+  messageContent.className =
+    message.role === "user"
+      ? "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#172538] text-white whitespace-normal"
+      : "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#2c343f] text-white whitespace-normal";
 
   if (message.role === "user") {
     messageContent.textContent = message.content;
