@@ -12,12 +12,12 @@ export function renderMessages(messages) {
     const empty = document.createElement("div");
     empty.className = "message-bubble message-welcome";
     empty.innerHTML = `
-			<div class="message-avatar" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')"></div>
-			<div class="message-content-container">
-				<p class="message-sender">MementoAI</p>
-				<p class="message-text ai">Welcome! Paste your OpenRouter key in Settings, pick a model, then start chatting. Tips:<br>• Shift+Enter = newline<br>• Use Remember on AI replies to store notes</p>
-			</div>
-		`;
+      <div class="message-avatar" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')"></div>
+      <div class="message-content-container">
+        <p class="message-sender">MementoAI</p>
+        <p class="message-text ai">Welcome! Paste your OpenRouter key in Settings, pick a model, then start chatting. Tips:<br>• Shift+Enter = newline<br>• Use Remember on AI replies to store notes</p>
+      </div>
+    `;
     messagesContainer.appendChild(empty);
   } else {
     // Add messages to container
@@ -34,40 +34,42 @@ export function renderMessages(messages) {
 // Create a message element
 function createMessageElement(message) {
   const messageDiv = document.createElement("div");
-  messageDiv.className = "message-bubble";
+  messageDiv.className = message.role === "user" 
+    ? "flex items-end gap-3 p-4 justify-end" 
+    : "flex items-end gap-3 p-4";
 
   // Create avatar
   const avatarDiv = document.createElement("div");
-  avatarDiv.className = "message-avatar";
-
+  avatarDiv.className = "bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 shrink-0";
+  
   // Set avatar based on role
   if (message.role === "user") {
-    // User avatar - using a default user icon
     avatarDiv.style.backgroundImage =
       "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2235%22 r=%2215%22 fill=%22%23a0abbb%22/><path d=%22M50,55 C35,55 25,65 25,80 L75,80 C75,65 65,55 50,55 Z%22 fill=%22%23a0abbb%22/></svg>')";
   } else {
-    // AI avatar - using the brain icon
     avatarDiv.style.backgroundImage =
       "url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>')";
   }
 
-  messageDiv.appendChild(avatarDiv);
-
   // Create content container
   const contentContainer = document.createElement("div");
-  contentContainer.className = "message-content-container";
+  contentContainer.className = message.role === "user" 
+    ? "flex flex-1 flex-col gap-1 items-end" 
+    : "flex flex-1 flex-col gap-1 items-start";
 
   // Add sender name
   const senderElement = document.createElement("p");
-  senderElement.className = "message-sender";
-  senderElement.textContent = message.role === "user" ? "You" : "MementoAI";
+  senderElement.className = message.role === "user"
+    ? "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px] text-right"
+    : "text-[#a0abbb] text-[13px] font-normal leading-normal max-w-[360px]";
+  senderElement.textContent = message.role === "user" ? "User" : "AI Assistant";
   contentContainer.appendChild(senderElement);
 
   // Add message content
   const messageContent = document.createElement("p");
-  messageContent.className = `message-text ${
-    message.role === "user" ? "user" : "ai"
-  }`;
+  messageContent.className = message.role === "user"
+    ? "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#172538] text-white whitespace-normal"
+    : "text-base font-normal leading-normal inline-block max-w-[360px] rounded px-4 py-3 bg-[#2c343f] text-white whitespace-normal";
 
   if (message.role === "user") {
     messageContent.textContent = message.content;
@@ -77,33 +79,14 @@ function createMessageElement(message) {
   }
 
   contentContainer.appendChild(messageContent);
-  messageDiv.appendChild(contentContainer);
 
-  // Add message actions for AI messages
-  if (message.role === "assistant") {
-    const messageActions = document.createElement("div");
-    messageActions.className = "message-actions";
-    messageActions.style.marginLeft = "52px"; // Align with message text
-
-    const copyButton = document.createElement("button");
-    copyButton.className = "message-action-btn";
-    copyButton.innerHTML = "📋 Copy";
-    copyButton.setAttribute("aria-label", "Copy message to clipboard");
-    copyButton.addEventListener("click", () =>
-      copyToClipboard(message.content)
-    );
-    messageActions.appendChild(copyButton);
-
-    const rememberButton = document.createElement("button");
-    rememberButton.className = "message-action-btn";
-    rememberButton.innerHTML = "🧠 Remember";
-    rememberButton.setAttribute("aria-label", "Add message to memory");
-    rememberButton.addEventListener("click", () =>
-      addToMemory(message.content)
-    );
-    messageActions.appendChild(rememberButton);
-
-    messageDiv.appendChild(messageActions);
+  // Add elements to container based on role
+  if (message.role === "user") {
+    messageDiv.appendChild(contentContainer);
+    messageDiv.appendChild(avatarDiv);
+  } else {
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentContainer);
   }
 
   return messageDiv;
