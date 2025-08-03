@@ -182,6 +182,30 @@ function loadMemoryContent() {
 	}
 }
 
+// Show modal
+function showModal(modalId) {
+	const modal = document.getElementById(modalId);
+	if (modal) {
+		modal.classList.add('active');
+		document.body.style.overflow = 'hidden';
+		// Focus first focusable element in modal
+		const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+		if (focusable) focusable.focus();
+	}
+}
+
+// Hide modal
+function hideModal(modalId) {
+	const modal = document.getElementById(modalId);
+	if (modal) {
+		modal.classList.remove('active');
+		document.body.style.overflow = '';
+		// Return focus to settings button
+		const settingsBtn = document.getElementById('settings-toggle');
+		if (settingsBtn) settingsBtn.focus();
+	}
+}
+
 // Load settings content into dialog
 function loadSettingsContent() {
 	const settings = getSettings();
@@ -390,6 +414,39 @@ function ensureSettingsStatus() {
 	}
 	return status
 }
+// Initialize modal functionality
+function initModal() {
+  const mobileSettingsToggle = document.getElementById('mobile-settings-toggle');
+  const desktopSettingsToggle = document.getElementById('desktop-settings-toggle');
+  const modalClose = document.getElementById('modal-close');
+  const modalOverlay = document.getElementById('modal-overlay');
+
+  if (mobileSettingsToggle) {
+    mobileSettingsToggle.addEventListener('click', () => showModal('settings-modal'));
+  }
+  
+  if (desktopSettingsToggle) {
+    desktopSettingsToggle.addEventListener('click', () => showModal('settings-modal'));
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', () => hideModal('settings-modal'));
+  }
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', () => hideModal('settings-modal'));
+  }
+}
+
+// Update existing settings close button to use modal close
+document.addEventListener('DOMContentLoaded', () => {
+  initModal();
+  
+  const closeSettings = document.getElementById('close-settings');
+  if (closeSettings) {
+    closeSettings.addEventListener('click', () => hideModal('settings-modal'));
+  }
+});
 
 // Handle import data
 function handleImportData() {
