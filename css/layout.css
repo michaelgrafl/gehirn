@@ -159,13 +159,13 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(56px + var(--safe-bottom));
-  padding: 8px 12px calc(8px + var(--safe-bottom));
   display: flex;
-  gap: 12px;
+  gap: 8px;
   border-top: 1px solid var(--border-color);
   background: var(--nav-bg, #20252d);
+  padding: 8px 16px 12px;
   z-index: 100;
+  height: auto;
 }
 
 .nav-item {
@@ -174,16 +174,30 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: end;
-  gap: 4px;
-  color: var(--text-primary);
+  gap: 2px;
+  color: var(--text-secondary);
   text-decoration: none;
-  border-radius: 999px;
-  padding: 2px 0;
+  padding: 0;
 }
 
-.nav-item .nav-icon,
+.nav-item .nav-icon {
+  color: inherit;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
 .nav-item .nav-label {
   color: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+}
+
+.nav-item.active {
+  color: var(--text-primary);
 }
 
 .nav-item.active {
@@ -198,7 +212,7 @@ body {
 
 /* Extra spacer in DOM if needed below nav (not always required with fixed nav) */
 .bottom-spacing {
-  height: 5px;
+  height: 20px;
   background: var(--nav-bg, #20252d);
 }
 
