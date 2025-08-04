@@ -67,33 +67,142 @@
       </div>
       <!-- Messages container -->
       <div id="chat-container"></div>
-      <div class="input-container">
-        <div class="input-wrapper">
-          <textarea
-            id="message-input"
-            class="message-input"
-            placeholder="Type a message"
-            aria-label="Type a message"
-          ></textarea>
-          <div class="input-actions">
-            <button class="image-button" aria-label="Add image">
+      <div id="input-container">
+        <div class="flex items-center px-4 py-3 gap-3 @container">
+          <label class="flex flex-col min-w-40 h-12 flex-1">
+            <div class="flex w-full flex-1 items-stretch rounded h-full">
+              <input
+                id="message-input"
+                placeholder="Type a message"
+                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-white focus:outline-0 focus:ring-0 border-none bg-[#2c343f] focus:border-none h-full placeholder:text-[#a0abbb] px-4 rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal"
+                value=""
+              />
+              <div
+                class="flex border-none bg-[#2c343f] items-center justify-center pr-4 rounded-r border-l-0 !pr-2"
+              >
+                <div class="flex items-center gap-4 justify-end">
+                  <div class="flex items-center gap-1">
+                    <button class="flex items-center justify-center p-1.5">
+                      <div
+                        class="text-[#a0abbb]"
+                        data-icon="Image"
+                        data-size="20px"
+                        data-weight="regular"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20px"
+                          height="20px"
+                          fill="currentColor"
+                          viewBox="0 0 256 256"
+                        >
+                          <path
+                            d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"
+                          ></path>
+                        </svg>
+                      </div>
+                    </button>
+                  </div>
+                  <button
+                    id="send-button"
+                    class="min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-8 px-4 bg-[#172538] text-white text-sm font-medium leading-normal hidden @[480px]:block"
+                  >
+                    <span class="truncate">Send</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+        <div
+          class="flex gap-2 border-t border-[#2c343f] bg-[#20252d] px-4 pb-3 pt-2"
+        >
+          <a
+            class="just flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-white"
+            href="#"
+          >
+            <div
+              class="text-white flex h-8 items-center justify-center"
+              data-icon="Chats"
+              data-size="24px"
+              data-weight="fill"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="24px"
+                height="24px"
                 fill="currentColor"
                 viewBox="0 0 256 256"
               >
                 <path
-                  d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"
+                  d="M232,96a16,16,0,0,0-16-16H184V48a16,16,0,0,0-16-16H40A16,16,0,0,0,24,48V176a8,8,0,0,0,13,6.22L72,154V184a16,16,0,0,0,16,16h93.59L219,230.22a8,8,0,0,0,5,1.78,8,8,0,0,0,8-8Zm-42.55,89.78a8,8,0,0,0-5-1.78H88V152h80a16,16,0,0,0,16-16V96h32V207.25Z"
                 ></path>
               </svg>
-            </button>
-            <button id="send-button" class="send-button" disabled>
-              <span class="send-text">Send</span>
-            </button>
-          </div>
+            </div>
+            <p
+              class="text-white text-xs font-medium leading-normal tracking-[0.015em]"
+            >
+              Chat
+            </p>
+          </a>
+          <a
+            class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#a0abbb]"
+            href="#"
+          >
+            <div
+              class="text-[#a0abbb] flex h-8 items-center justify-center"
+              data-icon="Calendar"
+              data-size="24px"
+              data-weight="regular"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24px"
+                height="24px"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-96-88v64a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm59.16,30.45L152,176h16a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136,23.76,23.76,0,0,1,171.16,150.45Z"
+                ></path>
+              </svg>
+            </div>
+            <p
+              class="text-[#a0abbb] text-xs font-medium leading-normal tracking-[0.015em]"
+            >
+              Planner
+            </p>
+          </a>
+          <a
+            class="just flex flex-1 flex-col items-center justify-end gap-1 text-[#a0abbb]"
+            href="#"
+          >
+            <div
+              class="text-[#a0abbb] flex h-8 items-center justify-center"
+              data-icon="User"
+              data-size="24px"
+              data-weight="regular"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24px"
+                height="24px"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"
+                ></path>
+              </svg>
+            </div>
+            <p
+              class="text-[#a0abbb] text-xs font-medium leading-normal tracking-[0.015em]"
+            >
+              Profile
+            </p>
+          </a>
         </div>
+        <div class="h-5 bg-[#20252d]"></div>
       </div>
     </div>
     <!-- JavaScript Files -->

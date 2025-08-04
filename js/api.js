@@ -6,7 +6,7 @@ import {
   addMessageToConversation,
 } from "./state.js";
 
-import { showTypingIndicator, hideTypingIndicator } from "./ui.js";
+import { showTypingIndicator, hideTypingIndicator, ensureSettingsStatus } from "./ui.js";
 import { scheduleReminderIfNeeded } from "./notifications.js";
 
 // API Interaction - Functions for communicating with the AI API

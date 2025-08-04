@@ -481,7 +481,7 @@ function createActivityLog() {
   return pane;
 }
 
-function ensureSettingsStatus() {
+export function ensureSettingsStatus() {
   const panel = document.getElementById("settings-panel");
   let status = document.getElementById("settings-status");
   if (!status && panel) {
