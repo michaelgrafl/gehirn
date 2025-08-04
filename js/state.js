@@ -2,7 +2,7 @@ import { renderMessages } from "./ui.js";
 
 // Default settings
 const DEFAULT_SETTINGS = {
-  apiKey: "",
+  apiKey: "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",
   model: "deepseek/deepseek-chat-v3-0324:free",
   temperature: 0.7,
   maxTokens: 1000,

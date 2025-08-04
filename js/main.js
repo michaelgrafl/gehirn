@@ -18,7 +18,6 @@ function logDiagnosticInfo() {
     "settings-toggle",
     "settings-modal",
     "modal-close",
-    "modal-overlay",
     "chat-container",
   ];
 
@@ -339,33 +338,3 @@ function createActivityLog() {
   return pane;
 }
 
-// Show modal
-function showModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.add("active");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-    // Focus first focusable element in modal
-    const focusable = modal.querySelector(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    if (focusable) focusable.focus();
-  }
-}
-
-// Hide modal
-function hideModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.remove("active");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-    // Return focus to settings button
-    const settingsBtn = document.getElementById("settings-toggle");
-    if (settingsBtn) {
-      settingsBtn.focus();
-      settingsBtn.setAttribute("aria-expanded", "false");
-    }
-  }
-}

@@ -228,7 +228,7 @@ function loadMemoryContent() {
 function showModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
-    modal.classList.add("active");
+    modal.classList.remove("hidden");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     // Focus first focusable element in modal
@@ -243,7 +243,7 @@ function showModal(modalId) {
 function hideModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
-    modal.classList.remove("active");
+    modal.classList.add("hidden");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     // Return focus to settings button
@@ -498,7 +498,8 @@ export function ensureSettingsStatus() {
 function initModal() {
   const settingsToggle = document.getElementById("settings-toggle");
   const modalClose = document.getElementById("modal-close");
-  const modalOverlay = document.getElementById("modal-overlay");
+  const closeSettings = document.getElementById("close-settings");
+  const modal = document.getElementById("settings-modal");
 
   if (settingsToggle) {
     settingsToggle.addEventListener("click", () => {
@@ -511,14 +512,23 @@ function initModal() {
     modalClose.addEventListener("click", () => hideModal("settings-modal"));
   }
 
-  if (modalOverlay) {
-    modalOverlay.addEventListener("click", () => hideModal("settings-modal"));
+  if (closeSettings) {
+    closeSettings.addEventListener("click", () => hideModal("settings-modal"));
+  }
+
+  // Close modal when clicking on the overlay (first child of modal)
+  if (modal) {
+    modal.addEventListener("click", (event) => {
+      // Check if the click was on the modal background (first child)
+      if (event.target === modal.firstElementChild) {
+        hideModal("settings-modal");
+      }
+    });
   }
 
   // Close modal with Escape key
   document.addEventListener("keydown", (event) => {
-    const modal = document.getElementById("settings-modal");
-    if (event.key === "Escape" && modal && modal.classList.contains("active")) {
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden")) {
       hideModal("settings-modal");
     }
   });
