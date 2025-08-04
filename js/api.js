@@ -4,9 +4,14 @@ import {
   getConversation,
   getMemory,
   addMessageToConversation,
+  updateLastMessageInConversation,
 } from "./state.js";
 
-import { showTypingIndicator, hideTypingIndicator, ensureSettingsStatus } from "./ui.js";
+import {
+  showTypingIndicator,
+  hideTypingIndicator,
+  ensureSettingsStatus,
+} from "./ui.js";
 import { scheduleReminderIfNeeded } from "./notifications.js";
 
 // API Interaction - Functions for communicating with the AI API
@@ -15,7 +20,7 @@ import { scheduleReminderIfNeeded } from "./notifications.js";
 const API_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
 // Send message to API
-async function sendMessageToAPI(message) {
+async function sendMessageToAPI(message, onChunkReceived = null) {
   const settings = getSettings();
 
   if (!settings.apiKey) {
@@ -74,6 +79,7 @@ async function sendMessageToAPI(message) {
       messages: messages,
       temperature: settings.temperature,
       max_tokens: settings.maxTokens,
+      stream: !!onChunkReceived, // Enable streaming if onChunkReceived callback is provided
     };
 
     // Make API request
@@ -91,6 +97,12 @@ async function sendMessageToAPI(message) {
       throw new Error(errorData.error?.message || "API request failed");
     }
 
+    // Handle streaming response
+    if (onChunkReceived) {
+      return await handleStreamingResponse(response, onChunkReceived);
+    }
+
+    // Handle non-streaming response
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (error) {
@@ -105,6 +117,81 @@ async function sendMessageToAPI(message) {
       activity.prepend(item);
     }
     return null;
+  }
+}
+
+// Handle streaming response from API
+async function handleStreamingResponse(response, onChunkReceived) {
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let accumulatedContent = "";
+  let buffer = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() || ""; // Keep the last incomplete line in the buffer
+
+      for (const line of lines) {
+        // Skip empty lines and comment lines (starting with ':')
+        if (!line.trim() || line.startsWith(":")) {
+          continue;
+        }
+
+        if (line.startsWith("data: ")) {
+          const data = line.slice(6); // Remove "data: " prefix
+          console.log("data: ", data);
+          if (data === "[DONE]") {
+            // Stream finished
+            return accumulatedContent;
+          }
+
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content || "";
+            if (content) {
+              accumulatedContent += content;
+              onChunkReceived(content, accumulatedContent);
+            }
+          } catch (parseError) {
+            console.warn("Failed to parse streaming data:", data);
+          }
+        }
+      }
+    }
+
+    // Process any remaining data in the buffer
+    // Skip empty lines and comment lines (starting with ':')
+    if (
+      buffer.trim() &&
+      !buffer.startsWith(":") &&
+      buffer.startsWith("data: ")
+    ) {
+      const data = buffer.slice(6); // Remove "data: " prefix
+      if (data !== "[DONE]") {
+        try {
+          const parsed = JSON.parse(data);
+          const content = parsed.choices?.[0]?.delta?.content || "";
+          if (content) {
+            accumulatedContent += content;
+            onChunkReceived(content, accumulatedContent);
+          }
+        } catch (parseError) {
+          console.warn("Failed to parse remaining streaming data:", data);
+        }
+      }
+    }
+
+    return accumulatedContent;
+  } catch (error) {
+    console.error("Error handling streaming response:", error);
+    throw error;
+  } finally {
+    reader.releaseLock();
   }
 }
 
@@ -302,38 +389,53 @@ export async function sendMessage(userMessage) {
   // Show typing indicator
   showTypingIndicator();
 
+  // Add initial empty assistant message to conversation
+  const aiMsg = {
+    role: "assistant",
+    content: "",
+    timestamp: new Date().toISOString(),
+  };
+  addMessageToConversation(aiMsg);
   try {
-    // Get AI response
-    const aiResponse = await sendMessageToAPI(userMessage);
+    // Get AI response with streaming
+    let accumulatedResponse = "";
+    const aiResponse = await sendMessageToAPI(
+      userMessage,
+      (chunk, accumulated) => {
+        // Update accumulated response
+        accumulatedResponse = accumulated;
+
+        // Update the last message in the conversation with the partial response
+        // This will trigger a re-render of the UI with the updated content
+        updateLastMessageInConversation(accumulated);
+      }
+    );
 
     // Hide typing indicator
     hideTypingIndicator();
 
-    if (aiResponse) {
-      // Add AI response to conversation
-      const aiMsg = {
-        role: "assistant",
-        content: aiResponse,
-        timestamp: new Date().toISOString(),
-      };
-
-      addMessageToConversation(aiMsg);
+    // If we didn't get a response from streaming, use the final response
+    if (!accumulatedResponse && aiResponse) {
+      // Update the assistant message with the final response
+      updateLastMessageInConversation(aiResponse);
 
       // Schedule reminder if needed
       scheduleReminderIfNeeded(aiResponse);
+    } else if (accumulatedResponse) {
+      // Ensure the final response is saved to localStorage
+      // The UI was already updated during streaming, but we need to ensure
+      // the complete response is stored in the conversation
+      updateLastMessageInConversation(accumulatedResponse);
+      scheduleReminderIfNeeded(accumulatedResponse);
     }
   } catch (error) {
     // Hide typing indicator
     hideTypingIndicator();
 
-    // Add error message to conversation
-    const errorMsg = {
-      role: "assistant",
-      content: `Sorry, I encountered an error: ${error.message}`,
-      timestamp: new Date().toISOString(),
-    };
-
-    addMessageToConversation(errorMsg);
+    // Update the assistant message with the error
+    updateLastMessageInConversation(
+      `Sorry, I encountered an error: ${error.message}`
+    );
   }
 }
 

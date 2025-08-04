@@ -80,7 +80,6 @@ function createMessageElement(message) {
     messageContent.textContent = message.content;
   } else {
     // For AI messages, render markdown
-    // Wrap content in a markdown container with Tailwind spacing classes for proper styling
     messageContent.innerHTML = '<div class="markdown space-y-5">' + renderMarkdown(message.content) + '</div>';
   }
 

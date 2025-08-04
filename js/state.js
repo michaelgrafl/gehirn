@@ -1,5 +1,4 @@
 import { renderMessages } from "./ui.js";
-// State Management - localStorage and State Functions
 
 // Default settings
 const DEFAULT_SETTINGS = {
@@ -100,6 +99,18 @@ export function addMessageToConversation(message) {
   appState.conversation.push(message);
   saveConversation();
   renderMessages(appState.conversation);
+}
+
+// Update the last message in the conversation with partial response
+export function updateLastMessageInConversation(content) {
+  if (appState.conversation.length > 0) {
+    const lastMessage = appState.conversation[appState.conversation.length - 1];
+    if (lastMessage.role === "assistant") {
+      lastMessage.content = content;
+      saveConversation();
+      renderMessages(appState.conversation);
+    }
+  }
 }
 
 // Clear conversation data
